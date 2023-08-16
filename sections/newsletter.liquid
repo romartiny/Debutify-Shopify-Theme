@@ -1,0 +1,95 @@
+<div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="newsletter-section">
+  <div class="box">
+    <div class="wrapper">
+      
+      {% unless section.settings.title == blank and section.settings.subtitle == blank %}
+        <div class="grid">
+          <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+            <div class="section-header">
+              {% unless section.settings.title == blank %}
+                <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+              {% endunless %}
+              {% unless section.settings.subtitle == blank %}
+                <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+              {% endunless %}
+            </div>
+           </div>
+        </div>
+      {% endunless %}
+      
+      <div class="grid">
+        <div class="grid__item large--eight-twelfths push--large--two-twelfths one-whole text-center">
+          {% include 'newsletter-form' %}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "class": "newsletter-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading",
+		"default": "A short sentence describing what someone will receive by subscribing"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "send_icon",
+        "label": "Send icon",
+		"default": "fa-envelope",
+        "options": [
+          {
+            "value": "fa-arrow-right",
+            "label": "Arrow"
+          },
+          {
+            "value": "fa-envelope",
+            "label": "Envelope"
+          }
+        ]
+      },
+	  {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+	],
+	"presets": [
+      {
+        "name":  "Newsletter",
+        "category":"Promotional"
+      }
+    ]
+  }
+{% endschema %}

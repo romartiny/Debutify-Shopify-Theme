@@ -1,0 +1,22 @@
+{% if settings.show_announcement %}
+
+  {% if settings.show_announcement_home == false or template.name == 'index' %}
+	<div class="announcement-container text-center{% if settings.hide_announcement_mobile %} small--hide {% endif %}">
+      {% if settings.announcement_link != blank %}
+      <a href="{{ settings.announcement_link }}" class="announcement-bar{% if settings.announcement_size == 'small' %} announcement--small{% endif %}">
+        <div class="announcement-wrapper wrapper">
+          <span class="announcement-text">{{ settings.announcement_text | escape }}</span>
+        </div>
+      </a>
+      {% else %}
+      <div class="announcement-bar">
+        <div class="announcement-wrapper wrapper">
+          <span class="announcement-text">{{ settings.announcement_text | escape }}</span>
+        </div>
+      </div>
+      {% endif %}
+      {% if settings.position_currency_converter == "announcement" %}{% include "currency-selector" %}{% endif %}
+    </div>
+  {% endif %}
+
+{% endif %}

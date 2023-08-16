@@ -1,0 +1,8 @@
+{% case section.settings.grid %}
+  {% when '1' %}
+    {% assign grid_item_width = 'large--eight-twelfths push--large--two-twelfths text-center' %}
+  {% when '2' %}
+    {% assign grid_item_width = 'large--four-twelfths push--large--two-twelfths medium--six-twelfths' %}
+  {% when '3' %}
+    {% assign grid_item_width = 'large--four-twelfths medium--six-twelfths' %}
+{% endcase %}

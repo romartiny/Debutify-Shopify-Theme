@@ -1,0 +1,265 @@
+<div id="CollectionSection" data-section-id="{{ section.id }}" data-section-type="collection-template">
+  <div class="box">
+    <div class="wrapper">
+
+      {% if collection.handle == 'all' or collection.handle == 'frontpage' %}
+        <div class="grid">
+          <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+            <div class="section-header">
+              <h1 class="page-title">{{ collection.title }}</h1>
+              {% if collection.description %}
+                <p class="collection-description">{{ collection.description }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        {% unless settings.show_hero and collection.image %}
+          <div class="grid bob">
+            <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+              <div class="section-header">
+                <h1 class="page-title">{{ collection.title }}</h1>
+                {% if collection.description %}
+                  <p class="collection-description">{{ collection.description }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endunless %}
+      {% endif %}
+
+      {% if section.settings.collection_tags_enable or section.settings.collection_sort_enable %}
+        <div class="grid grid-uniform">
+          
+          {% assign filter_width = 'large--eight-twelfths push--large--two-twelfths large--text-center medium--text-center' %}
+          
+          {% if section.settings.collection_tags_enable and collection.all_tags.size > 0 %}
+            <div class="grid__item {{ filter_width }}">
+              
+              {% if section.settings.tag_selector == 'button' %}
+                <ul class="tags tags--collection">
+                  {% if section.settings.show_label %}
+                    <label class="filter-dropdown__label" for="filterBy">
+                      <span class="filter-dropdown__label--title">{{ 'collections.sorting.title_tags' | t }}</span>
+                    </label>
+                  {% endif %}
+                  <li{% unless current_tags %} class="tag--active"{% endunless %}>
+                    {% comment %}
+                      Good for /collections/all collection and regular collections
+                    {% endcomment %}
+                    {% if collection.handle %}
+                      <a href="/collections/{{ collection.handle }}">
+                        {{ 'collections.general.all_of_collection' | t }}
+                      </a>
+                      {% comment %}
+                        Good for automatic type collections
+                      {% endcomment %}
+                    {% elsif collection.current_type %}
+                      <a href="{{ collection.current_type | url_for_type }}">
+                        {{ 'collections.general.all_of_collection' | t }}
+                      </a>
+                      {% comment %}
+                        Good for automatic vendor collections
+                      {% endcomment %}
+                      {% elsif collection.current_vendor %}
+                        <a href="{{ collection.current_vendor | url_for_vendor }}">
+                          {{ 'collections.general.all_of_collection' | t }}
+                        </a>
+                    {% endif %}
+                  </li>
+
+                  {% for tag in collection.all_tags %}
+                    {% if current_tags contains tag %}
+                      <li class="tag--active">
+                        {{ tag | link_to_remove_tag: tag }}
+                      </li>
+                    {% else %}
+                      <li>
+                        {% comment %}
+                          Use link_to_add_tag if you want to allow filtering
+                          by multiple tags
+                        {% endcomment %}
+                        {{ tag | link_to_tag: tag }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div class="filter-dropdown__wrapper collection-tags">
+                  <div class="filter-dropdown">
+                    {% if section.settings.show_label %}
+                      <label class="filter-dropdown__label" for="filterBy">
+                        <span class="filter-dropdown__label--title">{{ 'collections.sorting.title_tags' | t }}</span>
+                      </label>
+                    {% endif %}
+                    <select name="filterBy" id="filterBy" class="tag-filter select--small small--full">
+                      <option value="">All</option>
+                      {% for tag in collection.all_tags %}
+                      {% if current_tags contains tag %}
+                      <option value="{{ tag | handle }}" selected>{{ tag }}</option>
+                      {% else %}
+                      <option value="{{ tag | handle }}">{{ tag }}</option>
+                      {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if section.settings.collection_sort_enable %}
+            <div class="grid__item {{ filter_width }} collection-sorting collection-sorting--enabled">
+              {% include 'collection-sorting' %}
+            </div>
+          {% endif %}
+          
+        </div>
+      {% endif %}
+      
+      {%- assign limit = section.settings.desktop_grid | times: section.settings.rows -%}
+      {% paginate collection.products by limit %}
+        <div class="grid grid-uniform grid--spacer">
+          {% include 'product-width' %}
+
+          {% for product in collection.products %}
+            {% include 'product-grid-item' %}
+          {% else %}
+            {% if collection.handle == 'all' %}
+              {% assign emptyState = true %}
+              {% for i in (1..limit) %}
+                {% include 'product-grid-item' %}
+              {% endfor %}
+            {% else %}
+              <div class="grid__item text-center">
+                <p>{{ 'collections.general.no_matches' | t }}</p>
+              </div>
+            {% endif %}
+          {% endfor %}
+          
+          {% if paginate.pages > 1 %}
+            <div class="grid__item">
+              {% include 'pagination' %}
+            </div>
+          {% endif %}
+        </div>
+      {% endpaginate %}
+      
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Collection pages",
+	"class": "collection-section",
+    "settings": [
+	  {
+		"type": "header",
+		"content": "Sorting"
+	  },
+      {
+        "type": "checkbox",
+        "id": "collection_tags_enable",
+        "label": "Show collection tags",
+		"default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort_enable",
+        "label": "Show collection sorting",
+		"default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_label",
+        "label": "Show label",
+		"default": true
+      },
+      {
+        "type": "select",
+        "id": "tag_selector",
+        "label": "Tag picker type",
+		"default": "select",
+        "options": [
+          {
+            "value": "button",
+            "label": "Button"
+          },
+          {
+            "value": "select",
+            "label": "Dropdown"
+          }
+        ]
+      },
+	  {
+		"type": "header",
+		"content": "Grid"
+	  },
+	  {
+        "type": "select",
+        "id": "rows",
+        "label": "Number of rows",
+        "default": "2",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          }
+        ]
+      },
+	  {
+		"type": "select",
+		"id": "desktop_grid",
+		"label": "Products per row (desktop)",
+        "default": "4",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          }
+        ]
+	  },
+	  {
+	  	"type": "select",
+		"id": "mobile_grid",
+		"label": "Product per row (mobile)",
+		"default": "2",
+		"options":[
+		  {
+			"value": "1",
+			"label": "1"
+		  },
+		  {
+			"value":"2",
+			"label": "2"
+		  }
+		]
+	  }
+    ]
+  }
+{% endschema %}

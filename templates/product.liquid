@@ -1,0 +1,33 @@
+<!-- /templates/product.liquid -->
+{% comment %}
+  The contents of the product.liquid template can be found in /sections/product-template.liquid
+{% endcomment %}
+
+<div itemscope itemtype="http://schema.org/Product">
+
+  {% section 'product-template' %}{% section "dbtfy-upsell-bundles" %}{% section "dbtfy-pricing-table" %}  
+  
+  {% section 'product-recommendations' %}
+  
+  {% if settings.review_widget == 'review_widget_above' %}
+    {% include 'review-widget' %}
+  {% endif %}
+  
+  {% section 'related-product' %}
+
+  {% if settings.review_widget == 'review_widget_under' %}
+    {% include 'review-widget' %}
+  {% endif %}
+  
+  {% if collection %}
+    <div class="back-box">
+      <a href="{{ collection.url }}" class="btn btn--banner">
+        <span class="fas fa-arrow-left" aria-hidden="true"></span>
+        {{ 'products.general.collection_return' | t: collection: collection.title }}
+      </a>
+    </div>
+  {% endif %}
+  
+  {% section 'quotes' %}
+
+</div>

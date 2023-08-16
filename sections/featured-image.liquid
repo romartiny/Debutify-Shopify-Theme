@@ -1,0 +1,88 @@
+{%- if section.settings.image != blank -%}
+<div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="featured-image-section">
+  <div class="box">
+    <div class="{% if section.settings.full_width %}wrapper--full{% else %}wrapper{% endif %}">
+        
+      <style>
+        {% if section.settings.full_width %}
+        #section-{{ section.id }} .box{
+          padding-bottom: 0px;
+          padding-top: 0px;
+        }
+        {% endif %}
+      </style>
+      
+      {% if section.settings.image_link != blank %}
+      <a href="{{ section.settings.image_link }}" class="image-link">
+      {% endif %} 
+        
+      <div class="image-wrapper animated fadeIn" style="padding-top:{{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100}}%;">
+        {% assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+        <img class="image lazyload"
+             src="{{ section.settings.image | img_url: 'medium' }}"
+             data-src="{{ img_url }}"
+             data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+             data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+             data-sizes="auto"
+             alt="{{ section.settings.image.alt | escape }}">
+      </div>
+        
+      {% if section.settings.image_link != blank %}
+      </a>
+      {% endif %} 
+        
+    </div>
+  </div>
+</div>
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Featured image",
+    "class": "featured-image-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "full_width",
+        "label": "Full width",
+        "default": true
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+      {
+        "type": "url",
+        "id": "image_link",
+        "label": "Link"
+      }
+	],
+	"presets": [
+      {
+        "name":  "Featured image",
+        "category":"Image"
+      }
+    ]
+  }
+{% endschema %}

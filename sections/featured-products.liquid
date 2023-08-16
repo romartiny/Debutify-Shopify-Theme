@@ -1,0 +1,246 @@
+{%- assign limit = section.settings.desktop_grid | times: section.settings.rows -%}
+{% assign counter = 0 %}
+
+  <div id="section-{{ section.id }}" class="{{ section.settings.section_style }}"  data-section-id="{{ section.id }}" data-section-type="product-grid-section">
+      <div class="box">
+        <div class="wrapper">
+
+          {% unless section.settings.title == blank and section.settings.subtitle == blank %}
+            <div class="grid">
+              <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+                <div class="section-header">
+                  {% unless section.settings.title == blank %}
+                    <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+                  {% endunless %}
+                  {% unless section.settings.subtitle == blank %}
+                    <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+                  {% endunless %}
+                </div>
+               </div>
+            </div>
+          {% endunless %}
+          
+          <div class="grid grid-uniform grid--spacer{% if section.settings.desktop_grid == '2' %} large--eight-twelfths{% endif %}{% if section.settings.slider_related_products %} slick-format slick-product-grid slick-product-grid-{{ section.id }}{% endif %}"
+               data-count="{{ limit }}"
+               data-slidetoshow="{{ section.settings.desktop_grid }}"
+               data-slidetoshowmobile="{{ section.settings.mobile_grid }}"
+               data-autoplay="{{ section.settings.autoplay }}"
+               data-autoplayspeed="{{ section.settings.autoplayspeed | times: 1000 }}"
+               data-dots="{{ section.settings.dots }}"
+               data-arrows="{{ section.settings.arrows }}">
+            
+            {% include 'product-width' %}
+            
+            {% if section.settings.home_featured_products == blank or collections[section.settings.home_featured_products] == empty or collections[section.settings.home_featured_products].products_count == 0 %}
+              {% unless emptyState %}
+                {% assign emptyState = true %}
+              {% endunless %}
+            
+              {% for i in (1..limit) %}
+                {% include 'product-grid-item' %}
+              {% endfor %}
+            {% else %}
+              {% for product in collections[section.settings.home_featured_products].products %}
+                {% include 'product-grid-item' %}
+              {% endfor %}
+            {% endif %}
+          </div>
+          
+          <div class="slick-navigation">
+            <button class="slick-arrows slick-prev">
+              <span class="fas fa-arrow-left"></span>
+            </button>
+            <div class="slick-dots-container"></div>
+            <button class="slick-arrows slick-next">
+              <span class="fas fa-arrow-right"></span>
+            </button>
+          </div>
+                 
+          {% if section.settings.show_view_all %}
+          <div class="view-all-box">
+            <a href="{{ collections[section.settings.home_featured_products].url }}" class="btn {{ section.settings.button_style }} view-all-link">
+              {{ 'blogs.article.view_all' | t }}
+            </a>
+          </div>
+          {% endif %}
+
+        </div>
+    </div>
+  </div>
+
+{% schema %}
+  {
+    "name": "Featured collection",
+	"class": "featured-products-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured products"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+      {
+        "type": "collection",
+        "id": "home_featured_products",
+        "label": "Collection"
+      },
+	  {
+		"type": "header",
+		"content": "Grid"
+	  },
+	  {
+        "type": "select",
+        "id": "rows",
+        "label": "Number of rows",
+        "default": "2",
+        "options": [
+		  {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          }
+        ]
+      },
+	  {
+		"type": "select",
+		"id": "desktop_grid",
+		"label": "Products per row (desktop)",
+        "default": "4",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          }
+        ]
+	  },
+	  {
+	  	"type": "select",
+		"id": "mobile_grid",
+		"label": "Product per row (mobile)",
+		"default": "2",
+		"options":[
+		  {
+			"value": "1",
+			"label": "1"
+		  },
+		  {
+			"value":"2",
+			"label": "2"
+		  }
+		]
+	  },
+	  {
+		"type": "header",
+		"content": "Footer"
+	  },
+	  {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      },
+	  {
+        "type": "select",
+        "id": "button_style",
+        "label": "Button style",
+        "default": "btn-outline-primary",
+        "options": [
+          {
+            "value": "",
+			"label": "Default"
+          },
+          {
+            "value": "btn--primary",
+            "label": "Full"
+          },
+		  {
+			"value": "btn-outline-primary",
+            "label": "Outline"
+          }
+        ]
+      },
+      {
+		"type": "header",
+		"content": "Slider options"
+	  },
+      {
+        "type": "checkbox",
+        "id": "slider_related_products",
+        "label": "Enable slider",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "autoplay",
+        "label": "Auto rotate",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "dots",
+        "label": "Show dots",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "arrows",
+        "label": "Show arrows",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "autoplayspeed",
+        "label": "Slide changes every",
+        "min": 3,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "default": 5
+      }
+    ],
+    "presets": [{
+      "name": "Featured collection",
+      "category": "Collection"
+    }]
+  }
+{% endschema %}

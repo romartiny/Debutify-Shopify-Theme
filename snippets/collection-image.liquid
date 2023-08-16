@@ -1,0 +1,29 @@
+{% if settings.show_hero and collection.image %}
+
+  {% include 'hero-header' %}
+  <div class="hero-container hero-collection hero-header">
+    <div class="hero hero--{{ settings.section_height }} hero-mobile-{{ settings.section_height_mobile }} overlay lazyload hero-parallax"
+      data-bgset="{% include 'bgset', image: collection.image %}"
+      data-sizes="auto"
+      data-parent-fit="cover"
+      style="background-position: center center; background-image: url('{{ collection.image | img_url: 'medium' }});">
+
+      <div class="hero__inner">
+        <div class="hero__text-wrapper text-center">
+
+          <div class="grid">
+            <div class="grid__item large--eight-twelfths push--large--two-twelfths one-whole hero-content">
+              <h2 class="hero__title">{{ collection.title | escape }}</h2>
+              {% unless collection.description == blank %}
+                <div class="rte hero__text">
+                  <p>{{ collection.description }}</p>
+                </div>
+              {% endunless %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %} 

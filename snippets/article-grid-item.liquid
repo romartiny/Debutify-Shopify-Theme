@@ -1,0 +1,83 @@
+{% unless grid_item_width %}
+  {% assign grid_item_width = 'large--one-third medium--one-half' %}
+{% endunless %}
+
+{% if section.settings.word_count %}
+  {% assign word_count = section.settings.word_count %}
+{% else %}
+  {% assign word_count = '60' %}
+{% endif %}
+
+{% assign article_content = article.excerpt_or_content %}
+
+{% if emptyState %}
+  {% assign article_link = '/admin/articles' %}
+{% else %}
+  {% assign article_link = article.url %}
+{% endif %}
+
+<article class="article grid__item {{ grid_item_width }}">
+  
+  {% unless section.settings.show_image == false %}
+    {% if article.image != blank or emptyState == true %}
+      <a href="{{ article_link }}" class="article__featured-link image-link">
+        {% if emptyState == true %}
+          {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+          {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg image-spacer' }}
+        {% else %}
+          <div class="article__featured-image-wrapper image-wrapper image-spacer" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+            {% assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+            <img class="article__featured-image image lazyload"
+              src="{{ article.image | img_url: 'small' }}"
+              data-src="{{ img_url }}"
+              data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+              data-aspectratio="{{ article.image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{ article.title | escape }}">
+          </div>
+        {% endif %}
+      </a>
+    {% endif %}
+  {% endunless %}
+
+  <{% unless template == "index" %}h2{% else %}h3{% endunless %}>
+    <a href="{{ article_link }}">
+      {% if emptyState == true %}
+        {{ 'home_page.onboarding.blog_title' | t }}
+      {% else %}
+        {{ article.title }}
+      {% endif %}
+    </a>
+  </{% unless template == "index" %}h2{% else %}h3{% endunless %}>
+           
+  {% include 'blog-meta' %}
+        
+  {% unless section.settings.word_count == 0 or article_content == blank %}
+    <div class="rte">
+      {% if emptyState == true %}
+        {{ 'home_page.onboarding.blog_excerpt' | t | strip_html | truncatewords: section.settings.word_count }}
+      {% else %}
+        {{ article_content | strip_html | truncatewords: word_count }}
+      {% endif %}
+    </div>
+  {% endunless %}
+      
+  {% if article.tags.size > 0 and section.settings.show_tags %}
+    <ul class="tags tags--article inline-list">
+      {% include 'tags-article' %}
+    </ul>
+  {% endif %}
+      
+  <p><a href="{{ article_link }}" class="text-link continue-link">{{ 'blogs.article.read_more' | t }} <span class="fas fa-arrow-right" aria-hidden="true"></span></a></p>
+
+</article>
+
+{% comment %}
+  Add a line break to force item to go to the next line when the grid is = 2
+{% endcomment %}
+
+{% if section.settings.grid == '2' %}
+  {% if forloop.index == 2 or forloop.index == 4 or forloop.index == 6 %}
+    <hr class="hr--breaker">
+  {% endif %}
+{% endif %}

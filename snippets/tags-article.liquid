@@ -1,0 +1,8 @@
+<!-- /snippets/tags-article.liquid -->
+{% if article.tags.size > 0 %}
+  {% for tag in article.tags %}
+    <li>
+      <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="btn btn-outline-primary btn--small">{{ tag }}</a>
+    </li>
+  {% endfor %}
+{% endif %}

@@ -1,0 +1,214 @@
+<!-- /templates/cart.liquid -->
+{% comment %}
+
+  For info on test orders:
+    - General http://docs.shopify.com/manual/your-store/orders/test-orders
+    - Shopify Payments - http://docs.shopify.com/manual/more/shopify-payments/testing-shopify-payments
+
+{% endcomment %}
+
+{% include "dbtfy-cart-countdown" %}<div class="grid">
+  <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+    <div class="section-header">
+      <h1 class="page-title">{{ 'cart.general.title' | t }}</h1>
+      {% include "dbtfy-cart-goal" %}{% if cart.item_count == 0 %}
+     	<p class="cart--empty-message">{{ 'cart.general.empty' | t }}</p>
+		<a href="{{ settings.browsing_link }}" class="btn {{ settings.browsing_button_style}} cart--continue-browsing">{{ 'cart.general.continue_browsing_html' | t }}</a>
+		<p class="cookie-message">{{ 'cart.general.cookies_required' | t }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if cart.item_count > 0 %}
+  <form action="/cart" method="post" novalidate class="cart {% if settings.cart_spacer %}cart-spacer{% endif %}">
+
+  	<div class="cart__row cart__header-labels{% unless settings.cart_top_button %} small--hide{% endunless %}">
+  	  <div class="grid--full grid-uniform">
+        <div class="grid__item large--seven-twelfths medium--six-twelfths">
+          {% if settings.cart_top_button %}
+          <button id="topCheckoutButton" class="btn btn--buy small--full">
+            <span class="btn__text">
+              {% unless settings.checkout_icon == empty %}
+              <span class="fas fa-{{ settings.checkout_icon }}" aria-hidden="true"></span>
+              {% endunless %}
+              {{ 'cart.general.checkout' | t }}
+            </span>
+          </button>
+          {% endif %}
+        </div>
+        <div class="grid__item large--five-twelfths medium--six-twelfths small--hide">
+  	      <div class="grid--full">
+  	        <div class="grid__item one-half">
+  	          {{ 'cart.label.quantity' | t }}
+  	        </div>
+  	        <div class="grid__item one-half text-right">
+  	          {{ 'cart.label.total' | t }}
+  	        </div>
+  	      </div>
+  	    </div>
+  	  </div>
+  	</div>
+
+    {% comment %}
+      Loop through products in the cart
+    {% endcomment %}
+    {% for item in cart.items %}
+      <div class="cart__row">
+        <div class="grid--full cart__row--table-large">
+
+          <div class="grid__item large--seven-twelfths">
+            <div class="grid">
+
+              <div class="grid__item one-third">
+                <a href="{{ item.url | within: collections.all }}" class="cart__image">
+
+                  {% comment %}
+                    More image size options at:
+                      - http://docs.shopify.com/themes/filters/product-img-url
+                  {% endcomment %}
+                  <img src="{{ item | img_url: 'medium' }}" alt="{{ item.title | escape }}">
+                </a>
+              </div>
+
+              <div class="grid__item two-thirds">
+                <a href="{{ item.url }}" class="cart__product-name">
+                  {{ item.product.title }}
+                </a>
+                {% unless item.variant.title contains 'Default' %}
+                  <p class="cart__product-meta">
+                    {{ item.variant.title }}
+                  </p>
+                {% endunless %}
+
+                {% if settings.grid_product_vendor %}
+                  <p class="cart__product-meta">{{ item.vendor }}</p>
+                {% endif %}
+
+                {% assign property_size = item.properties | size %}
+                {% if property_size > 0 %}
+                  {% for p in item.properties %}
+                    {% assign first_character_in_key = p.first | truncate: 1, '' %}
+                    {% unless p.last == blank or first_character_in_key == '_' %}
+                      {{ p.first }}:
+
+                      {% if p.last contains '/uploads/' %}
+                        <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                      {% else %}
+                        {{ p.last }}
+                      {% endif %}
+
+                      <br>
+                    {% endunless %}
+                  {% endfor %}
+                {% endif %}
+
+                <p class="cart__product-meta">
+                  <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0">
+                    <span class="fas fa-trash"></span>
+                    {{ 'cart.general.remove' | t }}
+                  </a>
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="grid__item large--five-twelfths cart-quantity-price">
+            <div class="grid grid-uniform cart__row--table cart__quantity-grid{% if item.line_level_discount_allocations != blank %} cart__has-discount{% endif %}">
+
+              <div class="grid__item one-half cart__quantity-grid__item">
+                <label for="updates_{{ item.key }}" class="visually-hidden">{{ 'cart.label.quantity' | t }}</label>
+                {% include 'quantity-selector', type:'cart' %}
+              </div>
+
+              <div class="grid__item one-half text-right cart__price-grid__item">
+                {%- if item.original_line_price != item.final_line_price -%}
+                  <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                  <del class="cart__price cart__price--strikethrough price">{{ item.original_line_price | money }}</del>
+                  <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+                  <span class="cart__price">{{ item.final_line_price | money }}</span>
+                {%- else -%}
+                  <span class="cart__price">{{ item.original_line_price | money }}</span>
+                {%- endif -%}
+
+                {%- if item.line_level_discount_allocations != blank -%}
+                  <ul class="text-discount order-discount order-discount--list order-discount--title order-discount--cart-list" aria-label="{{ 'customer.order.discount' | t }}">
+                    {%- for discount_allocation in item.line_level_discount_allocations -%}
+                    <li class="order-discount__item">
+                      <span class="fas fa-tag" aria-hidden="true"></span> {{ discount_allocation.discount_application.title }} (-{{ discount_allocation.amount | money }})
+                    </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="cart__row">
+      <div class="grid">
+        {% if settings.cart_notes_enable %}
+        <div class="grid__item large--seven-twelfths medium--four-twelfths cart__note-container">
+          <div class="cart__note">
+            <label for="CartSpecialInstructions"><span class="fas fa-info-circle"></span> {{ 'cart.general.note' | t }}</label>
+            <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+          </div>
+        </div>
+        {% endif %}
+        <div class="grid__item large--five-twelfths medium--eight-twelfths {% unless settings.cart_notes_enable %} push--large--seven-twelfths{% endunless %}">
+          <div class="grid--full cart__row--table">
+            <div class="grid__item one-half">
+              <p class="cart__subtotal">{{ 'cart.general.subtotal' | t }}</p>
+            </div>
+            <div class="grid__item one-half text-right">
+              <p class="cart__subtotal">{{ cart.total_price | money }}</p>
+            </div>
+          </div>
+
+          {% if cart.total_discount > 0 %}
+            {% assign cartTotalDiscount = cart.total_discount | money %}
+            <p class="cart__savings text-discount text-center"><span class="fas fa-tag"></span> {{ 'cart.general.savings_html' | t: savings: cartTotalDiscount }}</p>
+          {% endif %}
+
+          <p class="cart__note_checkout rte text-center">
+            {%- capture taxes_shipping_checkout -%}
+            {%- if shop.taxes_included and shop.shipping_policy.body != blank -%}
+            {{ 'cart.general.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+            {%- elsif shop.taxes_included -%}
+            {{ 'cart.general.taxes_included_but_shipping_at_checkout' | t }}
+            {%- elsif shop.shipping_policy.body != blank -%}
+            {{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+            {%- else -%}
+            {{ 'cart.general.taxes_and_shipping_at_checkout' | t }}
+            {%- endif -%}
+            {%- endcapture -%}
+            {{ taxes_shipping_checkout }}
+          </p>
+
+          <button type="submit" name="update" class="btn btn--full btn--small update-cart">
+            <span class="fas fa-sync-alt" aria-hidden="true"></span>
+            {{ 'cart.general.update' | t }}
+          </button>
+
+          {% include "dbtfy-cart-discount" %}<button type="submit" name="checkout" class="btn btn--buy btn--full cart__checkout">
+            <span class="btn__text">
+              {% unless settings.checkout_icon == empty %}
+              <span class="fas fa-{{ settings.checkout_icon }}" aria-hidden="true"></span>
+              {% endunless %}
+              {{ 'cart.general.checkout' | t }}
+            </span>
+          </button>
+
+          {% if additional_checkout_buttons and settings.enable_payment_button %}
+            <div class="additional_checkout_buttons">{{ content_for_additional_checkout_buttons }}</div>
+          {% endif %}{% include "dbtfy-trust-badge", position: "cart" %} 
+        </div>
+      </div>
+    </div>
+
+  </form>
+{% endif %}

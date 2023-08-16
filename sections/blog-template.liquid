@@ -1,0 +1,133 @@
+<div id="BlogSection" data-section-id="{{ section.id }}" data-section-type="blog-template">
+  
+  <div class="grid">
+  	<div class="grid__item large--eight-twelfths push--large--two-twelfths">
+      <div class="section-header">
+        {% if current_tags %}
+          <h1>{{ blog.title | link_to: blog.url }} &mdash; {{ current_tags.first }}</h1>
+        {% else %}
+          <h1 class="page-title">{{ blog.title }}</h1>
+        {% endif %}
+        {% if section.settings.show_rss %}
+          <a href="{{ shop.url }}{{ blog.url }}.atom" class="icon-fallback-text rss-link">
+            <span class="fas fa-rss fa-2x" aria-hidden="true"></span>
+            <span class="fallback-text">RSS</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+    
+  {%- assign limit = section.settings.grid | times: section.settings.rows -%}
+  {% paginate blog.articles by limit %}
+    <div class="grid grid-uniform grid--spacer">
+      {% include 'article-width' %}
+
+      {% for article in blog.articles %}
+        {% include 'article-grid-item' %}
+      {% endfor %}
+      
+      {% if paginate.pages > 1 %}
+        <div class="grid__item">
+          {% include 'pagination' %}
+        </div>
+      {% endif %}
+    </div>
+  {% endpaginate %}
+</div>
+
+{% schema %}
+  {
+    "name": "Blog pages",
+    "class": "blog-section",
+    "settings": [
+	  {
+		"type": "header",
+		"content": "Grid"
+	  },
+      {
+        "type": "checkbox",
+        "id": "show_rss",
+        "label": "Show RSS icon",
+        "default": true
+      },
+	  {
+        "type": "select",
+        "id": "rows",
+        "label": "Number of rows",
+		"default": "2",
+		"options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+		  {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          }
+		]
+      },
+	  {
+        "type": "select",
+        "id": "grid",
+        "label": "Articles per row",
+		"default": "1",
+		"options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+		  {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          }
+		]
+      },
+      {
+		"type": "header",
+		"content": "Articles"
+	  },
+	  {
+        "type": "checkbox",
+        "id": "show_image",
+        "label": "Show cover image",
+        "default": true
+      },
+	  {
+		"type": "checkbox",
+		"id": "show_tags",
+		"label": "Show tags",
+		"default": true
+	  },
+	  {
+        "type": "range",
+        "id": "word_count",
+        "label": "Word count",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 60
+      }
+    ]
+  }
+{% endschema %}

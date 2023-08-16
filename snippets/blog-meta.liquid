@@ -1,0 +1,14 @@
+<div class="blog-meta">
+  {% if settings.show_author and article.author %}
+    <p class="featured-blog__author">
+      <span class="fas fa-pen-nib"></span>
+      {{ article.author }}
+    </p>
+  {% endif %}
+  {% if settings.show_date and article.published_at %}
+    <p class="featured-blog__date">
+      <span class="fas fa-calendar-alt"></span>
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
+    </p>
+  {% endif %}
+</div>

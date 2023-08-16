@@ -1,0 +1,26 @@
+{% form 'customer' %}
+  {{ form.errors | default_errors }}
+  {% if form.posted_successfully? %}
+    <div class="newsletter--form">
+      <div class="note form-success"><span class="fas fa-envelope"></span> {{ 'general.newsletter_form.newsletter_confirmation' | t }}</div>
+    </div>
+  {% else %}
+    <input type="hidden" name="contact[tags]" value="newsletter">
+    <div class="newsletter--form">
+      <div class="input-group">
+        <input id="newsletter-input" type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_placeholder' | t }}" name="contact[email]" id="Email" class="input-group-field newsletter__input" autocorrect="off" autocapitalize="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn--primary newsletter__submit" name="commit" id="Subscribe">
+            {% if section.settings.send_icon %}
+            <span class="fas {{ section.settings.send_icon }}"></span>
+            {% else block.settings.send_icon %}
+            <span class="fas {{ block.settings.send_icon }}"></span>
+            {% else %}
+            <span class="fas fa-envelope"></span>
+            {% endif %}
+          </button>
+        </span>
+      </div>
+    </div>
+  {% endif %}
+{% endform %}

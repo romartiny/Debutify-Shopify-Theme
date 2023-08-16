@@ -1,0 +1,24 @@
+{% case section.blocks.size %}
+  {% when 0 %}
+    {% assign column_width = '' %}
+  {% when 1 %}
+    {% if section.settings.full_width %}
+      {% assign column_width = 'one-whole text-center' %}
+    {% else %}
+      {% assign column_width = 'large--eight-twelfths push--large--two-twelfths text-center' %}
+    {% endif %}
+  {% when 2 %}
+    {% if width == 'full' %}
+      {% assign column_width = 'large--six-twelfths medium--six-twelfths' %}
+    {% else %}
+      {% assign column_width = 'large--four-twelfths push--large--two-twelfths medium--six-twelfths' %}
+    {% endif %}
+  {% when 3 %}
+    {% assign column_width = 'large--four-twelfths medium--four-twelfths' %}
+  {% when 4 %}
+    {% assign column_width = 'large--three-twelfths medium--six-twelfths' %}
+  {% when 5 %}
+    {% assign column_width = 'large--one-fifth medium--six-twelfths' %}
+  {% when 6 %}
+    {% assign column_width = 'large--two-twelfths medium--six-twelfths' %}
+{% endcase %}

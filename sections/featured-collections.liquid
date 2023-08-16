@@ -1,0 +1,200 @@
+{% comment %}
+  Show up to 9 collections.
+  Frontpage will be excluded if collections defined automatically
+{% endcomment %}
+{% assign emptyState = true %}
+{% assign collection_index = 0 %}
+{% assign collection_count = 0 %}
+{% assign collection_limit = section.blocks.size %}
+
+{% comment %}
+Add one to the collection limit to offset chance of Frontpage being included
+{% endcomment %}
+{% assign collection_limit = collection_limit | plus: 1 %}
+
+{% comment %}
+Calculate number of collections to show, making sure Frontpage isn't one
+{% endcomment %}
+{% for collection in section.blocks limit: collection_limit %}
+  {% assign collection_count = collection_count | plus: 1 %}
+{% endfor %}
+
+{% if collection_count > 0 %}           
+  {% assign emptyState = false %}
+{% endif %}
+
+{% assign divisible_by_three = collection_count | modulo: 3 %}
+{% assign divisible_by_two = collection_count | modulo: 2 %}
+
+<div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="list-collections-template">
+  <div class="box">
+    <div class="wrapper">
+
+      {% unless section.settings.title == blank and section.settings.subtitle == blank %}
+        <div class="grid">
+          <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+            <div class="section-header">
+              {% unless section.settings.title == blank %}
+                <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+              {% endunless %}
+              {% unless section.settings.subtitle == blank %}
+                <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+              {% endunless %}
+            </div>
+           </div>
+        </div>
+      {% endunless %}
+
+      {% unless emptyState %}
+        <div class="grid grid-uniform grid--spacer">
+          <!-- Blocks -->
+          {% for block in section.blocks limit: collection_limit %}
+              {% assign collection = collections[block.settings.collection] %}
+              {% assign collection_index = collection_index | plus: 1 %}
+              {% assign collection_handle = collection.handle %}
+              {% include 'collection-grid-collage' %}
+          {% endfor %}
+        </div>
+        {% if section.settings.show_view_all %}
+          <div class="view-all-box">
+            <a href="{{ routes.collections_url }}" class="btn {{ section.settings.button_style }} view-all-link">
+              {{ 'blogs.article.view_all' | t }}
+            </a>
+          </div>
+        {% endif %}
+      {% endunless %}
+      
+      {% if emptyState %}
+        {% include 'no-blocks' %}
+      {% endif %}
+      
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Collection list",
+	"class": "featured-collections-section",
+    "max_blocks": 9,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "section_height",
+        "label": "Section height",
+        "default": "medium",
+        "options": [
+          {
+            "label": "Extra Small",
+            "value": "xsmall"
+          },
+		  {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          },
+		  {
+            "label": "Extra Large",
+            "value": "xlarge"
+          }
+        ]
+      },
+	  {
+		"type": "header",
+		"content": "Footer"
+	  },
+	  {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      },
+	  {
+        "type": "select",
+        "id": "button_style",
+        "label": "Button style",
+        "default": "btn-outline-primary",
+        "options": [
+          {
+            "value": "",
+			"label": "Default"
+          },
+          {
+            "value": "btn--primary",
+            "label": "Full"
+          },
+		  {
+			"value": "btn-outline-primary",
+            "label": "Outline"
+          }
+        ]
+      }
+    ],
+	"blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "id": "collection",
+            "type": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [{
+      "name": "Collection list",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }]
+  }
+{% endschema %}

@@ -1,0 +1,51 @@
+{% unless template == 'index' or template == 'cart' or template == 'list-collections' %}
+  {% if settings.show_breadcrumbs %}
+    <nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+      <div class="wrapper">
+        
+        <div class="inline-list mb-0">
+          {{ shop.name | link_to: '/'  }}
+          {% if template contains 'page' %}
+            <span class="fas fa-angle-right" aria-hidden="true"></span>
+            <span>{{ page.title }}</span>
+          {% elsif template contains 'product' %}
+            {% if collection.url %}
+              <span class="fas fa-angle-right" aria-hidden="true"></span>
+              {{ collection.title | link_to: collection.url }}
+            {% endif %}
+            <span class="fas fa-angle-right" aria-hidden="true"></span>
+            <span>{{ product.title }}</span>
+          {% elsif template contains 'collection' and collection.handle %}
+            <span class="fas fa-angle-right" aria-hidden="true"></span>
+            {% if current_tags %}
+              {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+              {{ collection.title | link_to: url }}
+              <span class="fas fa-angle-right" aria-hidden="true"></span>
+              <span>{{ current_tags | join: " + " }}</span>
+            {% else %}
+              <span>{{ collection.title }}</span>
+            {% endif %}
+          {% elsif template == 'blog' %}
+            <span class="fas fa-angle-right" aria-hidden="true"></span>
+            {% if current_tags %}
+              {{ blog.title | link_to: blog.url }}
+              <span class="fas fa-angle-right" aria-hidden="true"></span>
+              <span>{{ current_tags | join: " + " }}</span>
+            {% else %}
+            <span>{{ blog.title }}</span>
+            {% endif %}
+          {% elsif template == 'article' %}
+            <span class="fas fa-angle-right" aria-hidden="true"></span>
+            {{ blog.title | link_to: blog.url }}
+            <span class="fas fa-angle-right" aria-hidden="true"></span>
+            <span>{{ article.title }}</span>
+          {% else %}
+           <span class="fas fa-angle-right" aria-hidden="true"></span>
+           <span>{{ page_title }}</span>
+          {% endif %}
+        </div>
+          
+      </div>
+    </nav>
+  {% endif %}
+{% endunless %}

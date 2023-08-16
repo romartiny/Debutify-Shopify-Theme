@@ -1,0 +1,126 @@
+<!-- /snippets/ajax-cart-template.liquid -->
+{% comment %}
+
+  This snippet provides the default handlebars.js templates for
+  the ajax cart plugin. Use the raw liquid tags to keep the
+  handlebar.js template tags as available hooks.
+
+{% endcomment %}
+  <script id="CartTemplate" type="text/template">
+  {% raw %}
+    <form action="/cart" method="post" novalidate class="cart ajaxcart {% endraw %}{% if settings.cart_spacer %}cart-spacer{% endif %}{% raw %}">
+      <div class="ajaxcart__inner ajaxcart__inner--has-fixed-footer">
+        {% endraw %}{% include "dbtfy-cart-goal" %}{% raw %}{{#items}}
+        <div class="ajaxcart__product">
+          <div class="ajaxcart__row" data-line="{{line}}">
+            <div class="grid--full grid-uniform ajaxcart__grid">
+              <div class="grid__item one-quarter">
+                <a href="{{url}}" class="ajaxcart__product-image"><img src="{{img}}" alt="{{name}}"></a>
+              </div>
+              <div class="grid__item three-quarters ajaxcart__grid-info">
+                <div class="ajaxcart__product-name--wrapper">
+                  <a href="{{url}}" class="ajaxcart__product-name">{{{name}}}</a>
+                  {{#if variation}}
+                    <span class="ajaxcart__product-meta">{{variation}}</span>
+                  {{/if}}
+                  {{#properties}}
+                    {{#each this}}
+                      {{#if this}}
+                        <span class="ajaxcart__product-meta">{{@key}}: {{this}}</span>
+                      {{/if}}
+                    {{/each}}
+                  {{/properties}}
+                </div>
+                <div class="grid--full grid-uniform ajaxcart__quantity-grid{{#if discountsApplied}} ajaxcart__has-discount{{/if}}">
+                  <div class="grid__item ajaxcart__quantity-grid__item">
+                  {% endraw %}{% include 'quantity-selector', type:'drawer' %}{% raw %}
+                  </div>
+                  <div class="grid__item ajaxcart__price-grid__item text-right">
+                   {{#if discountsApplied}}
+                      <span class="visually-hidden">{% endraw %}{{ 'products.general.regular_price' | t }}{% raw %}</span>
+                      <del class="ajaxcart__price ajaxcart__price--strikethrough price">{{{price}}}</del>
+                      <span class="visually-hidden">{% endraw %}{{ 'products.general.sale_price' | t }}{% raw %}</span>
+                      <span class="ajaxcart__price">{{{discountedPrice}}}</span>
+                    {{else}}
+                      <span class="ajaxcart__price">{{{price}}}</span>
+                    {{/if}}
+                  </div>
+                </div>
+                {{#if discountsApplied}}
+                  <div class="grid--full">
+                    <div class="grid__item text-right">
+                      <ul class="text-discount order-discount order-discount--list order-discount--title order-discount--ajax-cart order-discount--ajax-cart-list" aria-label="{% endraw %}{{ 'customer.order.discount' | t }}{% raw %}">
+                        {{#each discounts}}
+                          <li class="order-discount__item">
+                            <span class="fas fa-tag" aria-hidden="true"></span> {{ this.discount_application.title }} (-{{{ this.formattedAmount }}})
+                          </li>
+                        {{/each}}
+                      </ul>
+                    </div>
+                  </div>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/items}}
+
+        {% endraw %}{% if settings.cart_notes_enable %}{% raw %}
+          <div class="ajaxcart__note">
+            <label for="AjaxCartSpecialInstructions"><span class="fas fa-info-circle"></span> {% endraw %}{{ 'cart.general.note' | t }}{% raw %}</label>
+            <textarea name="note" class="input-full" id="AjaxCartSpecialInstructions">{{note}}</textarea>
+          </div>
+        {% endraw %}{% endif %}{% raw %} {% endraw %}{% include 'dbtfy-trust-badge', position: 'cart' %}{% raw %}  
+      </div>
+      
+      <div class="ajaxcart__footer ajaxcart__footer--fixed">
+        <div class="grid--full">
+          <div class="grid__item one-half">
+            <p class="ajaxcart__subtotal">{% endraw %}{{ 'cart.general.subtotal' | t }}{% raw %}</p>
+          </div>
+          <div class="grid__item one-half text-right">
+            <p class="ajaxcart__subtotal">{{{totalPrice}}}</p>
+          </div>
+        </div>
+        
+        {{#if totalCartDiscount}}
+          <p class="ajaxcart__savings text-discount text-center">
+          <span class="fas fa-tag"></span>
+          {% endraw %}{{ 'cart.general.savings_html' | t: savings: '' }}{% raw %}
+          {{{ totalCartDiscount }}}
+    	  </p>
+        {{/if}}
+        
+        <p class="ajaxcart__policies ajaxcart__note_checkout rte text-center">{% endraw %}
+          {%- capture taxes_shipping_checkout -%}
+            {%- if shop.taxes_included and shop.shipping_policy.body != blank -%}
+              {{ 'cart.general.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+            {%- elsif shop.taxes_included -%}
+              {{ 'cart.general.taxes_included_but_shipping_at_checkout' | t }}
+            {%- elsif shop.shipping_policy.body != blank -%}
+              {{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+            {%- else -%}
+              {{ 'cart.general.taxes_and_shipping_at_checkout' | t }}
+            {%- endif -%}
+          {%- endcapture -%}
+          {{ taxes_shipping_checkout }}
+        {% raw %}</p>
+
+        {% endraw %}{% include "dbtfy-cart-discount" %}{% raw %}<button type="submit" class="btn btn--buy btn--full cart__checkout ajaxcart-checkout" name="checkout">
+          <span class="btn__text">
+            {% endraw %}{% unless settings.checkout_icon == empty %}{% raw %}
+            <span class="fas fa-{% endraw %}{{ settings.checkout_icon }}{% raw %}" aria-hidden="true"></span>
+            {% endraw %}{% endunless %}
+            {{ 'cart.general.checkout' | t }}{% raw %}
+          </span>
+        </button>
+
+      </div>
+    </form>
+  </script>
+  <script id="AjaxQty" type="text/template">
+    {% endraw %}{% include 'quantity-selector', type:'ajax' %}{% raw %}
+  </script>
+  <script id="JsQty" type="text/template">
+    {% endraw %}{% include 'quantity-selector', type:'js' %}{% raw %}
+  </script>{% endraw %}

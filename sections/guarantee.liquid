@@ -1,0 +1,155 @@
+{% include 'block-width' %}
+
+{% if section.blocks.size > 0 %}
+  <div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="guarantee-template">
+    <div class="box">
+      <div class="wrapper">
+        <div class="grid grid-uniform grid--spacer">
+          
+          <!-- Blocks -->
+          {% for block in section.blocks %}
+            <div class="grid__item {{ column_width }}" {{ block.shopify_attributes }}>
+              <div class="guarantee-item {% if block.settings.text == blank and block.settings.button_label == blank %}guarantee-title-only{% endif %}">
+                {% unless block.settings.icon == blank %}
+                <div class="guarantee-icon">
+                  <span class="fas fa-{{ block.settings.icon }} {{ section.settings.icon_size }}"></span>
+                </div>
+                {% endunless %}
+                <div class="guarantee-content">
+                  {% unless block.settings.title == blank %}
+                  <h5 class="guarantee-title">{{ block.settings.title }}</h5>
+                  {% endunless %}
+                  {% unless block.settings.text == blank %}
+                    <div class="rte guarantee-text">{{ block.settings.text }}</div>
+                  {% endunless %}
+                  {% unless block.settings.button_label == blank %}
+                    <a href="{{ block.settings.button_link }}" class="btn {{ block.settings.button_style }} btn--small">
+                      {{ block.settings.button_label | escape }}
+                    </a>
+                  {% endunless %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          
+          {% if section.blocks.size == 0 %}
+            {% include 'no-blocks' %}
+          {% endif %}
+        
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+{% schema %}
+  {
+    "name": "Guarantee",
+    "class": "guarantee-section",
+    "max_blocks": 4,
+    "settings": [
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "icon_size",
+        "label": "Icon size",
+        "default": "fa-2x",
+        "options": [
+          {
+            "value": "",
+            "label": "Extra small"
+          },
+          {
+            "value": "fa-2x",
+            "label": "Small"
+          },
+          {
+            "value": "fa-3x",
+            "label": "Medium"
+          },
+		  {
+            "value": "fa-4x",
+            "label": "Large"
+          }
+        ]
+      }
+	],
+	"blocks" : [
+	  {
+        "type": "text",
+        "name": "Guarantee",
+        "settings": [
+		  {
+            "type": "text",
+            "id": "icon",
+            "label":"Icon",
+			"info": "Enter the name of any free solid icons on [FontAwesome](https://fontawesome.com/icons?d=gallery&s=solid&m=free)",
+            "default": "trophy"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label":"Heading",
+            "default": "Our Guarantee"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default":"<p>Share your guarantees with your customers.</p>"
+          },
+		  {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "default": "btn--primary",
+            "options": [
+              {
+                "value": "",
+                "label": "Default"
+              },
+              {
+                "value": "btn--primary",
+                "label": "Full"
+              },
+              {
+                "value": "btn-outline-primary",
+                "label": "Outline"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "id": "button_label",
+            "label": "Button label"
+          },
+          {
+            "type": "url",
+            "id": "button_link",
+            "label": "Button link"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

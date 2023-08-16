@@ -1,0 +1,241 @@
+{% if section.settings.related_product %}
+  {% assign number_of_related_products_per_row = section.settings.desktop_grid %}
+  {% assign number_of_rows = section.settings.rows %}
+
+  {% if settings.related_source == 'collection' %}
+    {% assign related_collection = true %}
+  {% elsif settings.related_source == 'all' %}
+    {% assign related_all = true %}
+  {% endif %}
+
+  {% if section.settings.same_vendor %}
+    {% assign same_vendor = true %}
+  {% else %}
+    {% assign same_vendor = false %}
+  {% endif %}
+
+  {% if section.settings.same_type %}
+    {% assign same_type = true %}
+  {% else %}
+    {% assign same_type = false %}
+  {% endif %}
+
+  {% assign exclusions = 'frontpage,all' | split: ',' %}
+
+  {% assign found_a_collection = false %}
+
+
+
+  {% if related_collection %}
+    {% if product.metafields.c_f['Related Products'] %}
+      {% assign collection = collections[product.metafields.c_f['Related Products']] %}
+    {% endif %}
+
+    {% if collection and collection.all_products_count > 1 %}
+      {% unless exclusions contains collection.handle %}
+        {% assign found_a_collection = true %}
+      {% endunless %}
+    {% endif %}
+
+    {% unless found_a_collection %}
+      {% for c in product.collections %}
+        {% unless exclusions contains c.handle or c.all_products_count < 2 %}
+          {% assign found_a_collection = true %}
+          {% assign collection = c %}
+          {% break %}
+        {% endunless %}
+      {% endfor %}
+    {% endunless %}
+  {% endif %}
+
+
+  {% if related_all %}
+    {% assign collection = collections.all %}
+
+    {% if collection.all_products_count > 1 %}
+      {% unless exclusions contains collection.handle %}
+        {% assign found_a_collection = true %}
+      {% endunless %}
+    {% endif %}
+  {% endif %}
+
+
+
+  {% if found_a_collection %}
+    {% assign counter = 0 %}
+    {% assign break_at = number_of_rows | times: number_of_related_products_per_row %}
+    {% assign current_product = product %}
+
+    {% include 'product-width' %}
+
+    {% capture related_items %}
+      {% for product in collection.products %}
+        {% unless product.handle == current_product.handle %}
+          {% unless same_vendor and current_product.vendor != product.vendor %}
+            {% unless same_type and current_product.type != product.type %}
+			  {% if product.available or settings.show_soldout %}
+
+                {% include 'product-grid-item' %}
+
+                {% assign counter = counter | plus: 1 %}
+                {% if counter == break_at %}
+                  {% break %}
+                {% endif %}
+
+              {% endif %}
+            {% endunless %}
+          {% endunless %}
+        {% endunless %}
+      {% endfor %}
+    {% endcapture %}
+    {% assign related_items = related_items | trim %}
+
+    {% unless related_items == blank %}
+      <div id="relatedProductSection" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="product-grid-section">
+        <div class="box">
+          <div class="wrapper">
+
+            {% unless section.settings.title == blank and section.settings.subtitle == blank %}
+            <div class="section-header">
+              <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+              <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+            </div>
+            {% endunless %}
+
+            <div class="grid grid-uniform grid--spacer">
+              {{ related_items }}
+            </div>
+
+          </div>
+        </div>
+      </div>
+	{% endunless %}
+  {% endif %}
+
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Related product",
+	"class": "related-product-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "related_product",
+        "label": "Enable",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "same_vendor",
+        "label": "Same vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "same_type",
+        "label": "Same product type",
+        "default": false
+      },
+	  {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "More in this collection"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading"
+      },
+      {
+        "type": "select",
+        "id": "related_source",
+        "label": "Product source",
+        "default": "collection",
+        "options": [
+		  {
+            "value": "collection",
+            "label": "Same collection"
+          },
+          {
+            "value": "all",
+            "label": "All pproducts"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "rows",
+        "label": "Number of rows",
+        "default": "1",
+        "options": [
+		  {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          }
+        ]
+      },
+	  {
+		"type": "select",
+		"id": "desktop_grid",
+		"label": "Products per row (desktop)",
+        "default": "4",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          }
+        ]
+	  },
+	  {
+	  	"type": "select",
+		"id": "mobile_grid",
+		"label": "Product per row (mobile)",
+		"default": "2",
+		"options":[
+		  {
+			"value": "1",
+			"label": "1"
+		  },
+		  {
+			"value":"2",
+			"label": "2"
+		  }
+		]
+	  }
+    ]
+  }
+{% endschema %}

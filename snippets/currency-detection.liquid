@@ -1,0 +1,36 @@
+{%- if settings.show_currency_selector and shop.enabled_currencies.size > 1 and settings.auto_currency_selector -%}  
+  <script id="currencyDetector">
+    function setCurrency(){
+      if (localStorage.currencySet) {} else {
+        $.getJSON('https://ipapi.co/json/', function(data) {
+          var json = JSON.stringify(data, null, 2);
+          var obj = JSON.parse(json);
+          var currency = obj.currency;
+          var defaultCurrency = "{{ shop.currency }}";
+          var currencySelector = $(".currency-selector");
+          var currentCurrency = currencySelector.val();
+          var currencyForm = $(".currency-form");
+          
+          if (currency == currentCurrency) {} else {
+            {%- for currency in shop.enabled_currencies -%}
+              {%- if forloop.first == true -%}
+              if (currency == '{{ currency.iso_code }}'){
+                currencySelector.val('{{ currency.iso_code }}').trigger('change');
+              }
+              {%- elsif forloop.last == true -%}
+              else{
+                currencySelector.val(defaultCurrency).trigger('change');
+              }
+              {%- else -%}
+              else if (currency == '{{ currency.iso_code }}'){
+                currencySelector.val('{{ currency.iso_code }}').trigger('change');
+              }
+              {%- endif -%}
+            {%- endfor -%}
+          }
+        });
+      }
+    }
+    setCurrency();
+  </script>
+{%- endif -%}

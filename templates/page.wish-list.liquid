@@ -1,0 +1,16 @@
+<div class="grid">
+                <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+                  <div class="section-header">
+                    <h1 class="page-title">{{ page.title }}</h1>
+                  </div>
+                  {% unless page.content == blank %}
+                  <div class="rte">
+                    {{ page.content }}
+                  </div>
+                  {% endunless %}
+                </div>
+              </div>
+
+              {% if settings.dbtfy_wish_list %}
+                {% include "dbtfy-wish-list", type: "page" %}
+              {% endif %}

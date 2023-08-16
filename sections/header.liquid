@@ -1,0 +1,495 @@
+<div class="header-container
+            drawer__header-container
+            nav-{{ section.settings.navigation_type }}"
+     data-section-id="{{ section.id }}" data-section-type="header-section" data-template="{{ template.name }}">
+    
+      <!-- Header -->
+	  <header class="site-header" role="banner">
+		<div class="{% if section.settings.navigation_wrapper == 'fluid' %}wrapper-fluid{% else %}wrapper{% endif %} header-wrapper">
+          
+          <!-- left icons -->
+          <div class="nav-containers nav-container-left-icons">
+            <ul class="inner-nav-containers">
+              <li class="site-nav__item site-nav--open">
+                <a href="" class="site-nav__link site-nav__link--icon js-drawer-open-button-left" aria-controls="NavDrawer">
+                  <span class="icon-fallback-text">
+                    <span class="fas fa-bars fa-fw" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'general.drawers.navigation' | t }}</span>
+                  </span>
+                </a>
+              </li>
+              {% if shop.customer_accounts_enabled %}
+                <li class="site-nav__item {% if section.settings.navigation_type != "hidden" %}large--hide {% endif %}">
+                  <a class="site-nav__link site-nav__link--icon" href="/account">
+                    <span class="icon-fallback-text">
+                      <span class="fas fa-user fa-fw" aria-hidden="true"></span>
+                      <span class="fallback-text">
+                        {% if customer %}
+                          {{ 'layout.customer.account' | t }}
+                        {% else %}
+                          {{ 'layout.customer.log_in' | t }}
+                        {% endif %}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+          
+          <!-- Logo -->
+          <div class="nav-containers nav-container-logo">
+            <ul class="inner-nav-containers">
+              
+                {% assign image_size = section.settings.height_logo | prepend: 'x' %}
+                {% assign image_size_mobile = section.settings.height_logo_mobile | prepend: 'x' %}
+              
+				{% if template.name == 'index' %}
+                	<h1 class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
+              	{% else %}
+                	<div class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
+              	{% endif %}
+                	<a href="{{ routes.root_url }}" itemprop="url" class="site-header__logo-link">
+               			{% if section.settings.inverted_logo and template.name == 'index' or template.name == 'collection' or template.name == 'article' %}
+                          	<img class="logo inverted-logo" src="{{ section.settings.inverted_logo | img_url: image_size }}"
+                            srcset="{{ section.settings.inverted_logo | img_url: image_size }} 1x, {{ section.settings.inverted_logo | img_url: image_size, scale: 2 }} 2x"
+                            alt="{{ section.settings.inverted_logo.alt | default: shop.name }}"
+                            itemprop="logo">
+                        {% else %}
+                      		<span class="inverted-logo">{{ shop.name }}</span> 
+						{% endif %}
+                    
+						{% if section.settings.default_logo %}
+                        	<img class="logo default-logo" src="{{ section.settings.default_logo | img_url: image_size }}"
+                        	srcset="{{ section.settings.default_logo | img_url: image_size }} 1x, {{ section.settings.default_logo | img_url: image_size, scale: 2 }} 2x"
+                       		alt="{{ section.settings.default_logo.alt | default: shop.name }}"
+                   			itemprop="logo">
+                      
+                      		<img class="logo mobile-logo" src="{{ section.settings.default_logo | img_url: image_size_mobile }}"
+                        	srcset="{{ section.settings.default_logo | img_url: image_size_mobile }} 1x, {{ section.settings.default_logo | img_url: image_size_mobile, scale: 2 }} 2x"
+                       		alt="{{ section.settings.default_logo.alt | default: shop.name }}"
+                   			itemprop="logo">
+                      	{% else %}
+                			<span class="default-logo">{{ shop.name }}</span>
+                            <span class="mobile-logo">{{ shop.name }}</span>
+						{% endif %}
+                	</a>
+				{% if template.name == 'index' %}
+                	</h1>
+              	{% else %}
+              		</div>
+				{% endif %}
+            
+            </ul>
+          </div>
+          
+          <!-- Navigation menu -->
+          <div id="AccessibleNav" class="site-nav nav-containers nav-container-menu">
+            <ul class="inner-nav-containers">         
+                {% for link in linklists[section.settings.main_menu_link_list].links %}
+                  {% if link.links != blank %}
+                  {% assign parent_index = forloop.index %}
+                    <li
+                      class="site-nav__item site-nav--has-dropdown {% if link.active %}site-nav--active{% endif %}"
+                      aria-haspopup="true"
+                      data-meganav-type="parent">
+                      <a
+                        href="{{ link.url }}"
+                        class="site-nav__link"
+                        data-meganav-type="parent"
+                        aria-controls="MenuParent-{{ parent_index }}"
+                        aria-expanded="false"
+                        {% unless template.name == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless%}>
+                          {{ link.title | escape }}
+                          <span class="fas fa-angle-down" aria-hidden="true"></span>
+                      </a>
+                      <ul
+                        id="MenuParent-{{ parent_index }}"
+                        class="site-nav__dropdown {% if link.levels == 2 %}site-nav--has-grandchildren{% endif %}"
+                        data-meganav-dropdown>
+                        {% for childlink in link.links %}
+                          {% if childlink.links != blank %}
+                          {% assign child_index = forloop.index %}
+                            <li
+                              class="site-nav__item site-nav--has-dropdown site-nav--has-dropdown-grandchild {% if childlink.active %}site-nav--active{% endif %}"
+                              aria-haspopup="true">
+                              <a
+                                href="{{ childlink.url }}"
+                                class="site-nav__dropdown-link"
+                                aria-controls="MenuChildren-{{ parent_index }}-{{ child_index }}"
+                                data-meganav-type="parent"
+                                {% unless template.name == 'index' %}{% if childlink.active %}aria-current="page"{% endif %}{% endunless%}
+                                tabindex="-1">
+                                  {{ childlink.title | escape }}
+                                  <span class="fas fa-angle-right" aria-hidden="true"></span>
+                              </a>
+                              <div class="site-nav__dropdown-grandchild">
+                                <ul
+                                  id="MenuChildren-{{ parent_index }}-{{ child_index }}"
+                                  data-meganav-dropdown>
+                                  {% for grandchildlink in childlink.links %}
+                                    <li{% if grandchildlink.active %} class="site-nav--active"{% endif %}>
+                                      <a
+                                        href="{{ grandchildlink.url }}"
+                                        class="site-nav__dropdown-link"
+                                        data-meganav-type="child"
+                                        {% unless template.name == 'index' %}{% if grandchildlink.active %}aria-current="page"{% endif %}{% endunless %}
+                                        tabindex="-1">
+                                          {{ grandchildlink.title | escape }}
+                                        </a>
+                                    </li>
+                                  {% endfor %}
+                                </ul>
+                              </div>
+                            </li>
+                          {% else %}
+                            <li{% if childlink.active %} class="site-nav--active"{% endif %}>
+                              <a
+                                href="{{ childlink.url }}"
+                                class="site-nav__dropdown-link"
+                                data-meganav-type="child"
+                                {% if childlink.active %}aria-current="page"{% endif %}
+                                tabindex="-1">
+                                  {{ childlink.title | escape }}
+                              </a>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                    </li>
+                  {% else %}
+                    <li class="site-nav__item{% if link.active %} site-nav--active{% endif %}">
+                      <a
+                        href="{{ link.url }}"
+                        class="site-nav__link"
+                        data-meganav-type="child"
+                        {% unless template.name == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless%}>
+                          {{ link.title | escape }}
+                      </a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+            </ul>
+          </div>
+            
+          <!-- right icons -->
+          <div class="nav-containers nav-container-right-icons">
+            <ul class="inner-nav-containers">
+              {% if settings.position_currency_converter == "header" %}{% include "currency-selector" %}{% endif %}
+              
+              {% if shop.customer_accounts_enabled %}
+              <li class="site-nav__item small--hide medium--hide {% if section.settings.navigation_type == "hidden" %}large--hide {% endif %}">
+                <a class="site-nav__link site-nav__link--icon" href="/account">
+                  <span class="icon-fallback-text">
+                    <span class="fas fa-user fa-fw" aria-hidden="true"></span>
+                    <span class="fallback-text">
+                      {% if customer %}
+                      {{ 'layout.customer.account' | t }}
+                      {% else %}
+                      {{ 'layout.customer.log_in' | t }}
+                      {% endif %}
+                    </span>
+                  </span>
+                </a>
+              </li>
+              {% endif %}
+
+              {% if settings.search_enabled %}
+              <li class="site-nav__item">
+                <a href="/search" class="site-nav__link site-nav__link--icon js-drawer-open-button-top" aria-controls="SearchDrawer">
+                  <span class="icon-fallback-text">
+                    <span class="fas fa-search fa-fw" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'general.search.title' | t }}</span>
+                  </span>
+                </a>
+              </li>
+              {% endif %}
+
+              <li class="site-nav__item">
+                {% include "dbtfy-wish-list", type:"menu" %}<a href="/cart" class="site-nav__link site-nav__link--icon cart-link js-drawer-open-button-right" aria-controls="CartDrawer">
+                  <span class="icon-fallback-text">
+                    <span class="fas fa-shopping-{{ settings.cart_icon }} fa-fw" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'layout.cart.title' | t }}</span>
+                  </span>
+                  <span class="cart-link__bubble animated infinite rubberBand {% if cart.item_count > 0 %} cart-link__bubble--visible{% endif %} "></span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      {%- if content_for_header contains "debutify" -%} {% include "dbtfy-mega-menu" %} {%- endif -%} </header>
+
+</div>
+
+{% schema %}
+  {
+    "name": "Header",
+	"class": "header-section",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "default_logo",
+        "label": "Logo"
+      },
+	  {
+        "type": "image_picker",
+        "id": "inverted_logo",
+        "label": "Transparent header logo"
+      },
+	  {
+        "type": "range",
+        "id": "height_logo",
+        "label": "Logo height",
+        "min": 30,
+        "max": 70,
+        "step": 2,
+        "unit": "px",
+        "default": 50,
+		"info": "Crop your logo image as close as possible for maximum size."
+      },
+	  {
+        "type": "header",
+        "content": "Navigation"
+      },
+	  {
+        "type": "select",
+        "id": "navigation_type",
+        "label": "Navigation type",
+		"default": "center",
+        "options": [
+          { "value": "left",
+            "label": "Left"
+          },
+          { "value": "right",
+            "label": "Right"
+          },
+          { "value": "center",
+            "label": "Center"
+          },
+          { "value": "center-logo",
+            "label": "Logo center"
+          },
+          { "value": "hidden",
+            "label": "Hidden"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "navigation_wrapper",
+        "label": "Navigation wrapper",
+		"default": "fluid",
+        "options": [
+          { 
+			"value": "",
+            "label": "Default"
+          },
+          { "value": "fluid",
+            "label": "Full"
+          }
+        ]
+      },
+	  {
+        "type": "link_list",
+        "id": "main_menu_link_list",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+	  {
+        "type": "header",
+        "content": "Mobile header"
+      },
+	  {
+        "type": "range",
+        "id": "height_logo_mobile",
+        "label": "Logo height",
+        "min": 20,
+        "max": 50,
+        "step": 2,
+        "unit": "px",
+        "default": 28
+      }
+    ],"blocks" : [
+            {
+              "type": "mega",
+              "name": "Mega menu",
+         	    "limit": 6,
+              "settings": [
+                {
+                  "type": "checkbox",
+                  "id": "dbtfy_mega_menu_header",
+                  "label": "Show header",
+            			"default": true
+                },
+                {
+                  "type": "url",
+                  "id": "dbtfy_mega_menu_trigger",
+                  "label": "Link trigger"
+                },
+                {
+                  "type": "link_list",
+                  "id": "dbtfy_mega_menu_multi",
+                  "label": "Menu"
+                },
+                {
+                  "type": "product",
+                  "id": "dbtfy_mega_menu_multi_product_1",
+                  "label": "Product"
+                },
+                {
+                  "type": "product",
+                  "id": "dbtfy_mega_menu_multi_product_2",
+                  "label": "Product"
+                },
+                {
+                  "type": "product",
+                  "id": "dbtfy_mega_menu_multi_product_3",
+                  "label": "Product"
+                },
+                {
+                  "type": "image_picker",
+                  "id": "dbtfy_mega_menu_multi_image",
+                  "label": "Image"
+                },
+                {
+                  "type": "url",
+                  "id": "dbtfy_mega_menu_multi_image_link",
+                  "label": "Image link"
+                }
+              ]
+            },
+            {
+              "type": "product",
+              "name": "Products",
+       	      "limit": 6,
+              "settings": [
+                {
+                  "type": "checkbox",
+                  "id": "dbtfy_mega_menu_header",
+                  "label": "Show header",
+      		        "default": true
+                },
+                {
+                  "type": "url",
+                  "id": "dbtfy_mega_menu_trigger",
+                  "label": "Link trigger"
+                },
+                {
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_product",
+                  "label": "Collection"
+                },
+                {
+                  "type": "select",
+                  "id": "dbtfy_mega_menu_product_grid",
+                  "label": "Products to show",
+                  "default": "5",
+                  "options": [
+                    {
+                      "value": "4",
+                      "label": "4"
+                    },
+                    {
+                      "value": "5",
+                      "label": "5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "collection",
+              "name": "Collections",
+       	      "limit": 6,
+              "settings": [
+                {
+                  "type": "checkbox",
+                  "id": "dbtfy_mega_menu_header",
+                  "label": "Show header",
+      			      "default": true
+                },
+                {
+                  "type": "url",
+                  "id": "dbtfy_mega_menu_trigger",
+                  "label": "Link trigger"
+                },
+                {
+                  "type": "text",
+                  "id": "dbtfy_mega_menu_title",
+                  "label": "Title",
+                  "default": "Collections"
+                },
+                {
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_collection_1",
+                  "label": "Collection"
+                },
+                {
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_collection_2",
+                  "label": "Collection"
+                },
+          		{
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_collection_3",
+                  "label": "Collection"
+                },
+          		{
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_collection_4",
+                  "label": "Collection"
+                },
+                {
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_collection_5",
+                  "label": "Collection"
+                },
+                {
+                  "type": "collection",
+                  "id": "dbtfy_mega_menu_collection_6",
+                  "label": "Collection"
+                }
+              ]
+            },
+            {
+              "type": "blog",
+              "name": "Blog posts",
+       	      "limit": 6,
+              "settings": [
+                {
+                  "type": "checkbox",
+                  "id": "dbtfy_mega_menu_header",
+                  "label": "Show header",
+      		      	"default": true
+                },
+                {
+                  "type": "url",
+                  "id": "dbtfy_mega_menu_trigger",
+                  "label": "Link trigger"
+                },
+                {
+                  "type": "blog",
+                  "id": "dbtfy_mega_menu_blog",
+                  "label": "Blog"
+                }
+              ]
+            },
+            {
+              "type": "html",
+              "name": "HTML",
+       	      "limit": 6,
+              "settings": [
+                {
+                  "type": "url",
+                  "id": "dbtfy_mega_menu_trigger",
+                  "label": "Link trigger"
+                },
+                {
+                  "type": "html",
+                  "id": "dbtfy_mega_menu_html",
+                  "label": "HTML"
+                }
+              ]
+            }
+          ] } {% endschema %}

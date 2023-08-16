@@ -1,0 +1,174 @@
+<div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="featured-row-section">
+  <div class="box">
+    <div class="wrapper">
+      
+      <div class="grid featured-row">
+        <div class="grid__item large--six-twelfths medium--six-twelfths small--one-whole featured-row__item featured-row-{{ section.settings.image_alignement }}">
+          {% if section.settings.image != blank %}
+            <div class="feature-row__image-wrapper image-wrapper" style="padding-top:{{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100}}%;">
+              {% assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+              <img class="feature-row__image image lazyload"
+                src="{{ section.settings.image | img_url: 'medium' }}"
+                data-src="{{ img_url }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ section.settings.image.alt | escape }}">
+            </div>
+          {% else %}
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endif %}
+        </div>
+
+        <div class="grid__item large--six-twelfths medium--six-twelfths small--one-whole feature-row__item {{ section.settings.text_alignment }}">
+          {% unless section.settings.title == blank %}
+            <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+          {% endunless %}
+          {% unless section.settings.text == blank %}
+            <div class="rte {% if section.settings.text_size == 'large' %}lead {% endif %}">{{ section.settings.text }}</div>
+          {% endunless %}
+          {% unless section.settings.button_label == blank %}
+            <a href="{{ section.settings.button_link }}" class="btn {{ section.settings.button_style }}">
+              {{ section.settings.button_label | escape }}
+            </a>
+          {% endunless %}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Image with text",
+	"class": "featured-row-section",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "text_size",
+        "label": "Text size",
+        "default": "medium",
+        "options": [
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_alignement",
+        "label": "Image alignment",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "text_alignment",
+        "label": "Text alignment",
+        "default": "text-center",
+        "options": [
+          {
+            "value": "",
+            "label": "Left"
+          },
+ 		  {
+            "value": "text-center",
+            "label": "Center"
+          },
+          {
+            "value": "text-right",
+            "label": "Right"
+          }
+        ]
+      },	
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Image with text"
+      },
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text",
+        "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+      },
+	  {
+        "type": "select",
+        "id": "button_style",
+        "label": "Button style",
+        "default": "btn--primary",
+        "options": [
+          {
+            "value": "",
+			"label": "Default"
+          },
+          {
+            "value": "btn--primary",
+            "label": "Full"
+          },
+		  {
+			"value": "btn-outline-primary",
+            "label": "Outline"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button label"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image with text",
+        "category": "Image"
+      }
+    ]
+  }
+{% endschema %}

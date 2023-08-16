@@ -1,0 +1,25 @@
+{% if settings.show_hero and article.image %}
+
+  {% include 'hero-header' %}
+  <div class="hero-container hero-collection hero-header">
+    <div class="hero hero--{{ settings.section_height }} hero-mobile-{{ settings.section_height_mobile }} overlay lazyload hero-parallax"
+      data-bgset="{% include 'bgset', image: article.image %}"
+      data-sizes="auto"
+      data-parent-fit="cover"
+      style="background-position: center center; background-image: url('{{ article.image | img_url: 'medium' }});">
+
+      <div class="hero__inner">
+        <div class="hero__text-wrapper text-center">
+
+          <div class="grid">
+            <div class="grid__item large--eight-twelfths push--large--two-twelfths one-whole hero-content">
+              <h2 class="hero__title">{{ article.title | escape }}</h2>
+              {% include 'blog-meta' %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,65 @@
+{% assign social_enable = false %}
+  {% if
+    settings.social_twitter_link != blank
+    or settings.social_facebook_link != blank
+    or settings.social_pinterest_link != blank
+    or settings.social_google_plus_link != blank
+    or settings.social_instagram_link != blank
+    or settings.social_tumblr_link != blank
+    or settings.social_youtube_link != blank
+    or settings.social_vimeo_link != blank
+    or settings.social_fancy_link != blank
+    or settings.social_snapchat_link != blank
+  %}
+  {% assign social_enable = true %}
+{% endif %}
+
+{% if social_enable %}
+<div class="social-medias">
+  {% if settings.social_facebook_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_facebook_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}">
+      <span class="fab fa-facebook-f fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_twitter_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_twitter_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Twitter' }}">
+      <span class="fab fa-twitter fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_pinterest_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_pinterest_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Pinterest' }}">
+      <span class="fab fa-pinterest-p fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_instagram_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_instagram_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}">
+      <span class="fab fa-instagram fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_snapchat_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_snapchat_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Snapchat' }}">
+      <span class="fab fa-snapchat-ghost fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_google_plus_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_google_plus_link | escape }}" rel="publisher" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Google Plus' }}">
+      <span class="fab fa-google-plus-g fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_tumblr_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_tumblr_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Tumblr' }}">
+      <span class="fab fa-tumblr fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_youtube_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_youtube_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}">
+      <span class="fab fa-youtube fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if settings.social_vimeo_link != blank %}
+    <a class="social-medias-icon" target="_blank" href="{{ settings.social_vimeo_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Vimeo' }}">
+      <span class="fab fa-vimeo-v fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+</div>
+{% endif %}

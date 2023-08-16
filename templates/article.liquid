@@ -1,0 +1,14 @@
+<!-- /templates/article.liquid -->
+{% comment %}
+  The contents of the article.liquid template can be found in /sections/article-template.liquid
+{% endcomment %}
+
+{% include 'article-image' %}
+
+{% if settings.announcement_position == 'under' %}
+  {% include 'announcement' %}
+{% endif %}
+
+{% include 'breadcrumbs' %}
+
+{% section 'article-template' %}

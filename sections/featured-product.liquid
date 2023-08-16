@@ -1,0 +1,312 @@
+{%- assign product = all_products[section.settings.featured_product] -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+{%- if product == empty -%}
+  {%- assign section_onboarding = true -%}
+  {%- assign vendor = 'home_page.onboarding.product_vendor' | t -%}
+  {%- assign title = 'home_page.onboarding.product_title' | t -%}
+  {%- assign compare_at_price = 2999 -%}
+  {%- assign price = 1999 -%}
+{%- else -%}
+  {%- assign section_onboarding = false -%}
+  {%- assign vendor = product.vendor -%}
+  {%- assign title = product.title -%}
+  {%- assign compare_at_price = current_variant.compare_at_price -%}
+  {%- assign price = current_variant.price -%}
+{%- endif -%}
+
+{% comment %}
+  The contents of the product.liquid template can be found in /snippets/product-template.liquid
+{% endcomment %}
+
+<div itemscope itemtype="http://schema.org/Product" id="section-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product-template" data-enable-history-state="false" data-scroll-to-image="{% if section.settings.image_layout == "stacked" %}true{% else %}false{% endif %}">
+  {% include 'product-template' %}
+</div>
+
+{% unless product.empty == empty %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+  </script>
+{% endunless %}
+
+{% schema %}
+  {
+    "name": "Featured product",
+	"class": "featured-product-section",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      },
+      {
+        "type": "header",
+        "content": "Product photos"
+      },
+	  {
+        "type": "select",
+        "id": "image_layout",
+        "label": "Image display",
+        "default": "stacked",
+        "options": [
+		  {
+            "value": "stacked",
+            "label": "Stacked"
+          },
+ 			{
+            "value": "thumbnail",
+            "label": "Thumbnail"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "product_photo_alignement",
+        "label": "Image alignement",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_zoom",
+        "label": "Enable image zoom",
+		"default": true
+      },
+	  {
+        "type": "header",
+        "content": "Product details"
+      },
+	  {
+        "type": "checkbox",
+        "id": "product_vendor",
+        "label": "Enable vendor",
+        "default": false
+      },
+  	  {
+        "type": "checkbox",
+        "id": "product_title_size",
+        "label": "Big product tite",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "product_header_alignement",
+        "label": "Alignement",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Left"
+          },
+          {
+            "value": "text-center",
+            "label": "Center"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "product_selector",
+        "label": "Variant picker type",
+        "options": [
+          {
+            "value": "radio",
+            "label": "Button"
+          },
+          {
+            "value": "select",
+            "label": "Dropdown"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "quantity_enabled",
+        "label": "Show quantity picker"
+      },
+	  {
+        "type": "checkbox",
+        "id": "button_cart_icon",
+        "label": "Show button cart icon",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "enable_payment_button",
+        "label": "Show dynamic checkout button",
+        "info": "Lets customers check out directly using a familiar payment method. [Learn more](https://help.shopify.com/manual/using-themes/change-the-layout/dynamic-checkout)",
+        "default": false
+      },
+	  {
+        "type": "checkbox",
+        "id": "show_description",
+        "label": "Show description",
+        "default": false
+      },
+	  {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_product_tags",
+        "label": "Show product tags",
+        "default": true
+      }
+    ,
+      {
+        "type": "header",
+        "content": "Product tabs"
+      },
+      {
+        "type": "checkbox",
+        "id": "dbtfy_product_tabs_first",
+        "label": "Open first tab",
+        "default": true
+      }
+                        	],
+    "blocks" : [
+      {
+        "type": "description",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_icon",
+            "label": "Icon",
+            "default": "list",
+            "info": "Enter the name of any free solid icons on [FontAwesome](https:\/\/fontawesome.com\/icons?d=gallery&s=solid&m=free)"
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_title",
+            "label": "Title",
+            "default": "Details",
+            "info": "To hide the default description, uncheck the \"Show description\" box above."
+          }
+        ]
+      },
+      {
+        "type": "reviews",
+        "name": "Reviews",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "dbtfy_product_tabs_review",
+            "label": "Show star ratings",
+            "default": true
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_icon",
+            "label": "Icon",
+      			"default": "thumbs-up",
+            "info": "Enter the name of any free solid icons on [FontAwesome](https:\/\/fontawesome.com\/icons?d=gallery&s=solid&m=free)"
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_title",
+            "label": "Title",
+            "default": "Reviews",
+            "info": "To show your review widget in product tabs, go in \"Review app\" > \"Review widget\" and select the \"In product tabs\" position"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text/Image/HTML",
+        "settings": [
+          {
+            "type": "select",
+            "id": "text_alignment",
+            "label": "Text alignment",
+            "default": "text-center",
+            "options": [
+              {
+                "value": "",
+                "label": "Left"
+              },
+              {
+                "value": "text-center",
+                "label": "Center"
+              },
+              {
+                "value": "text-right",
+                "label": "Right"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_icon",
+            "label": "Icon",
+            "info": "Enter the name of any free solid icons on [FontAwesome](https:\/\/fontawesome.com\/icons?d=gallery&s=solid&m=free)"
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_title",
+            "label": "Title",
+            "default": "Rich text"
+          },
+          {
+            "type": "richtext",
+            "id": "dbtfy_product_tabs_text",
+            "label": "Text"
+          },
+          {
+            "type": "image_picker",
+            "id": "dbtfy_product_tabs_image",
+            "label": "Image"
+          },
+          {
+            "type": "html",
+            "id": "dbtfy_product_tabs_html",
+            "label": "HTML"
+          },
+          {
+            "type": "header",
+            "content": "Visibility settings"
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_type",
+            "label": "Product type",
+      			"info": "Comma-separated"
+          },
+          {
+            "type": "text",
+            "id": "dbtfy_product_tabs_tag",
+            "label": "Product tag",
+            "info": "Comma-separated"
+          },
+          {
+            "type": "product",
+            "id": "dbtfy_product_tabs_product",
+            "label": "Product"
+          },
+          {
+            "type": "collection",
+            "id": "dbtfy_product_tabs_collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],"presets": [
+          {
+            "name": "Featured product",
+            "category": "Product"
+          }
+          ] } {% endschema %}

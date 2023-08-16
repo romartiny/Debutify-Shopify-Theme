@@ -1,0 +1,16 @@
+<div class="filter-dropdown__wrapper collection-filters">
+  <div class="filter-dropdown">
+    {% if section.settings.show_label %}
+    <label class="filter-dropdown__label" for="sortBy">
+      <span class="filter-dropdown__label--title">{{ 'collections.sorting.title' | t }}</span>
+      <span class="filter-dropdown__label--active"></span>
+    </label>
+    {% endif %}
+    {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+    <select name="sort_by" id="sortBy" aria-describedby="a11y-refresh-page-message" class="filter-dropdown__select select--small small--full">
+      {% for option in collection.sort_options %}
+        <option value="{{ option.value }}"{% if sort_by == option.value %} selected="selected"{% endif %}>{{ option.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>

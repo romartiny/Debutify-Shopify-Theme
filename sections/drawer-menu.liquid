@@ -1,0 +1,188 @@
+<div id="NavDrawer" class="drawer drawer--left drawer--has-fixed-header{% if section.settings.show_social_medias %} has-social-medias{% endif %}{% if settings.cart_spacer %} cart-spacer{% endif %}" data-section-id="{{ section.id }}" data-section-type="drawer-menu-section">
+    <div class="drawer__fixed-header">
+      <div class="drawer__header">
+        <div class="drawer__title">
+          <span class="fas fa-bars" aria-hidden="true"></span>
+          {{ 'general.drawers.navigation' | t }}
+        </div>
+        <div class="drawer__close">
+          <button type="button" class="btn btn-square-small icon-fallback-text drawer__close-button js-drawer-close">
+            <span class="fas fa-times" aria-hidden="true"></span>
+            <span class="fallback-text">{{ 'cart.general.close_cart' | t }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  <div class="drawer__inner drawer-left__inner">
+    <ul class="mobile-nav">
+      {% if settings.position_currency_converter == "header" %}{% include "currency-selector" %}{% endif %}
+      {% for link in linklists[section.settings.drawer_top_link_list].links %}
+        {% if link.links != blank %}
+          <li class="mobile-nav__item">
+            <div class="mobile-nav__has-sublist">
+              <a
+                href="{{ link.url }}"
+                class="mobile-nav__link {% if section.settings.drawer_link_toggle %}mobile-nav__toggle-btn{% endif %}"
+                id="Label-{{ forloop.index }}"
+                {% unless template.name == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless%}>{{ link.title | escape }}</a>
+              <div class="mobile-nav__toggle">
+                <button type="button" class="btn btn-square-small mobile-nav__toggle-btn icon-fallback-text" aria-controls="Linklist-{{ forloop.index }}" aria-expanded="false">
+                  <span class="icon-fallback-text mobile-nav__toggle-open">
+                    <span class="fas fa-plus" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'general.drawers.expand_submenu' | t }} {{ link.title | escape }}</span>
+                  </span>
+                  <span class="icon-fallback-text mobile-nav__toggle-close">
+                    <span class="fas fa-minus" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'general.drawers.collapse_submenu' | t }} {{ link.title | escape }}</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <ul class="mobile-nav__sublist" id="Linklist-{{ forloop.index }}" aria-labelledby="Label-{{ forloop.index }}" role="navigation">
+              {% assign parent_index = forloop.index %}
+              {% for childlink in link.links %}
+                {% if childlink.links != blank %}
+                <li class="mobile-nav__item">
+                  <div class="mobile-nav__has-sublist">
+                    <a
+                      href="{{ childlink.url }}"
+                      class="mobile-nav__link {% if section.settings.drawer_link_toggle %}mobile-nav__toggle-btn{% endif %}"
+                      id="Label-{{ parent_index }}-{{ forloop.index }}"
+                      {% unless template.name == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless%}>
+                        {{ childlink.title }}
+                    </a>
+                    <div class="mobile-nav__toggle">
+                      <button type="button" class="btn btn-square-small mobile-nav__toggle-btn icon-fallback-text" aria-controls="Linklist-{{ parent_index }}-{{ forloop.index }}" aria-expanded="false">
+                        <span class="icon-fallback-text mobile-nav__toggle-open">
+                          <span class="fas fa-plus" aria-hidden="true"></span>
+                          <span class="fallback-text">{{ 'general.drawers.expand_submenu' | t }} {{ link.title | escape }}</span>
+                        </span>
+                        <span class="icon-fallback-text mobile-nav__toggle-close">
+                          <span class="fas fa-minus" aria-hidden="true"></span>
+                          <span class="fallback-text">{{ 'general.drawers.collapse_submenu' | t }} {{ link.title | escape }}</span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <ul class="mobile-nav__sublist mobile-nav__subsublist" id="Linklist-{{ parent_index }}-{{ forloop.index }}" aria-labelledby="Label-{{ parent_index }}-{{ forloop.index }}" role="navigation">
+                    {% for grandchildlink in childlink.links %}
+                      <li class="mobile-nav__item">
+                        <a
+                          href="{{ grandchildlink.url }}"
+                          class="mobile-nav__link"
+                          {% unless template.name == 'index' %}{% if grandchildlink.active %}aria-current="page"{% endif %}{% endunless%}>
+                            {{ grandchildlink.title | escape }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </li>
+                {% else %}
+                <li class="mobile-nav__item">
+                  <a
+                    href="{{ childlink.url }}"
+                    class="mobile-nav__link"
+                    {% unless template.name == 'index' %}{% if childlink.active %}aria-current="page"{% endif %}{% endunless%}>
+                      {{ childlink.title | escape }}
+                  </a>
+                </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </li>
+
+          {% else %}
+
+          <li class="mobile-nav__item">
+            <a
+              href="{{ link.url }}"
+              class="mobile-nav__link"
+              {% unless template.name == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless%}>
+                {{ link.title | escape }}
+            </a>
+          </li>
+
+        {% endif %}
+      {% endfor %}
+      
+      {% comment %}
+        If customer accounts are enabled, provide login and create account links
+      {% endcomment %}
+      {% if shop.customer_accounts_enabled %}
+        <li class="mobile-nav__spacer"></li>
+        {% if customer %}
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            <a href="/account">
+              <span class="fas fa-user fa-fw"></span>
+              {{ 'layout.customer.account' | t }}
+            </a>
+          </li>
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            <a href="/account/logout">
+              <span class="fas fa-sign-out-alt fa-fw"></span>
+              {{ 'layout.customer.log_out' | t }}
+            </a>
+          </li>
+        {% else %}
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            <a href="/account/register">
+              <span class="fas fa-sign-in-alt fa-fw"></span>
+              {{ 'layout.customer.log_in' | t }}
+            </a>
+          </li>
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            <a href="/account/register">
+              <span class="fas fa-user-plus fa-fw"></span>
+              {{ 'layout.customer.create_account' | t }}
+            </a>
+          </li>
+        {% endif %}
+      {% endif %}
+      
+      {% if section.settings.drawer_bottom_link_list %}
+        <li class="mobile-nav__spacer"></li>
+        {% for link in linklists[section.settings.drawer_bottom_link_list].links %}
+          <li class="mobile-nav__item mobile-nav__item--secondary"><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {% endfor %}
+      {% endif %}
+    </ul>
+    <!-- //mobile-nav -->
+  </div>
+  {% if section.settings.show_social_medias %}
+    {% include 'social-medias' %}
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Drawer menu",
+	"class": "drawer-menu-section",
+    "settings": [
+	  {
+        "type": "checkbox",
+        "id": "drawer_link_toggle",
+        "label": "Toggle submenu on links",
+		"default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_social_medias",
+        "label": "Show social medias",
+		"default": true
+      },
+      {
+        "type": "link_list",
+        "id": "drawer_top_link_list",
+        "label": "Primary menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "link_list",
+        "id": "drawer_bottom_link_list",
+        "label": "Additional menu",
+        "default": "footer"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,353 @@
+{% assign column_number = 0 %}
+
+{% comment %}
+   Determine whether there are social links
+{% endcomment %}
+
+{% assign footer_social_enable = false %}
+        {% if
+          settings.social_twitter_link != blank
+          or settings.social_facebook_link != blank
+          or settings.social_pinterest_link != blank
+          or settings.social_google_plus_link != blank
+          or settings.social_instagram_link != blank
+          or settings.social_tumblr_link != blank
+          or settings.social_youtube_link != blank
+          or settings.social_vimeo_link != blank
+          or settings.social_fancy_link != blank
+          or settings.social_snapchat_link != blank
+        %}
+  {% assign footer_social_enable = true %}
+{% endif %}
+
+{% case section.blocks.size %}
+  {% when 0 %}
+	{% assign column_number = 0 %}
+  {% when 1 %}
+    {% assign column_number = column_number | plus: 1 %}
+  {% when 2 %}
+	{% assign column_number = column_number | plus: 2 %}
+  {% when 3 %}
+	{% assign column_number = column_number | plus: 3 %}
+  {% when 4 %}
+	{% assign column_number = column_number | plus: 4 %}
+  {% when 5 %}
+	{% assign column_number = column_number | plus: 5 %}
+{% endcase %}
+
+{% if section.blocks.size == 1 %}
+  {% assign single_item = true %}
+{% endif %}
+
+<!-- site footer -->
+<footer id="section-footer" role="contentinfo" data-section-id="{{ section.id }}" data-section-type="footer-section">
+
+  {% if section.blocks.size > 0 %}
+    <div class="box site-footer">
+      <div class="wrapper">
+        <div class="grid grid-uniform grid--spacer main-footer">
+
+          <!-- Blocks -->
+          {% for block in section.blocks %}
+              <div class="grid__item footer-item footer-{{ block.type }} {% if single_item %} footer-single-item{% endif %} {% if column_number < 3 %}inline-footer{% endif %}" {{ block.shopify_attributes }}>
+                {% unless block.settings.title == blank or block.settings.image %}
+                  <h4 class="site-footer__linktitle">{{ block.settings.title | escape }}</h4>
+                {% endunless %}
+
+                {% case block.type %}
+                  {% when 'newsletter' %}
+                    {% unless block.settings.subtitle == blank %}
+                      <p>{{ block.settings.subtitle | escape }}</p>
+                    {% endunless %}
+                    {% include 'newsletter-form' %}
+                  {% when 'text' %}
+                    {% if block.settings.image != blank %}
+                      {% assign image_size = block.settings.height_logo | prepend: 'x' %}
+                      <a href="{{ routes.root_url }}" class="image-link">
+                        <img class="logo"
+                             src="{{ block.settings.image | img_url: image_size }}"
+                             srcset="{{ block.settings.image | img_url: image_size }} 1x, {{ block.settings.image | img_url: image_size, scale: 2 }} 2x"
+                             alt="{{ block.settings.image.alt | default: shop.name }}"
+                             itemprop="logo">
+                      </a>
+                    {% endif %}
+                    {% if block.settings.text != blank %}
+                    <div class="site-footer__rte rte">
+                      {{ block.settings.text }}
+                    </div>
+                    {% endif %}
+                    {% if block.settings.email != blank or block.settings.phone != blank %}
+                	<ul class="no-bullets site-footer__linklist ">
+                      {% if block.settings.email != blank %}
+                        <li>
+                          <a href="mailto:{{ block.settings.email | escape }}">
+                            <span class="fas fa-at fa-fw" aria-hidden="true"></span>
+                            {{ block.settings.email }}
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if block.settings.phone != blank %}
+                        <li>
+                          <a href="tel:{{ block.settings.phone | remove: '-' | replace: ' ', '' }}">
+                            <span class="fas fa-phone fa-fw" aria-hidden="true"></span>
+                            {{ block.settings.phone }}
+                          </a>
+                        </li>
+                      {% endif %}
+                    </ul>
+                	{% endif %}
+                  {% when 'link_list' %}
+                    <ul class="no-bullets site-footer__linklist ">
+                      {% for link in linklists[block.settings.footer_link_list].links %}
+                        <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  {% when 'social_medias' %}
+                    {% if footer_social_enable %}
+                      <ul class="no-bullets social-icons">
+                        {% if settings.social_facebook_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_facebook_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}">
+                              <span class="fab fa-facebook-f fa-fw" aria-hidden="true"></span>
+                              Facebook
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_twitter_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_twitter_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Twitter' }}">
+                              <span class="fab fa-twitter fa-fw" aria-hidden="true"></span>
+                              Twitter
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_pinterest_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_pinterest_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Pinterest' }}">
+                              <span class="fab fa-pinterest-p fa-fw" aria-hidden="true"></span>
+                              Pinterest
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_instagram_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_instagram_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}">
+                              <span class="fab fa-instagram fa-fw" aria-hidden="true"></span>
+                              Instagram
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_snapchat_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_snapchat_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Snapchat' }}">
+                              <span class="fab fa-snapchat-ghost fa-fw" aria-hidden="true"></span>
+                              Snapchat
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_google_plus_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_google_plus_link | escape }}" rel="publisher" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Google Plus' }}">
+                              <span class="fab fa-google-plus-g fa-fw" aria-hidden="true"></span>
+                              Google Plus
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_tumblr_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_tumblr_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Tumblr' }}">
+                              <span class="fab fa-tumblr fa-fw" aria-hidden="true"></span>
+                              Tumblr
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_youtube_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_youtube_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}">
+                              <span class="fab fa-youtube fa-fw" aria-hidden="true"></span>
+                              YouTube
+                            </a>
+                          </li>
+                        {% endif %}
+                        {% if settings.social_vimeo_link != blank %}
+                          <li>
+                            <a class="" target="_blank" href="{{ settings.social_vimeo_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Vimeo' }}">
+                              <span class="fab fa-vimeo-v fa-fw" aria-hidden="true"></span>
+                              Vimeo
+                            </a>
+                          </li>
+                        {% endif %}
+                      </ul>
+                    {% endif %}
+
+                {% endcase %}
+              </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  
+  <div class="bottom-footer small--text-center medium--text-center">
+    <div class="wrapper">
+      <div class="grid">
+        
+        <div class="grid__item large--one-half">
+          {% if settings.position_currency_converter == "footer" %}{% include "currency-selector" %}{% endif %}
+          <span class="credentials">
+            <span>Copyright &copy; {{ 'now' | date: '%Y' }} {{ shop.name | link_to: '/'  }}</span>
+            | <span>Powered by <a href="https://www.shopify.com/?ref=debutify" target="_blank" rel="nofollow">Shopify</a></span>
+            | <span>Theme by <a href="https://debutify.com" target="_blank">Debutify</a></span>
+          </span>
+        </div>
+        
+        <div class="grid__item large--one-half large--text-right">
+          {% if section.settings.show_payment_icons %}
+            {% include 'payment-icons' %}
+          {% endif %}
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+{% schema %}
+  {
+    "name": "Footer",
+	"class": "footer-section",
+ 	"max_blocks": 5,
+    "settings": [
+      {
+        "type": "header",
+        "content": "Payment methods"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_payment_icons",
+        "label": "Show payment icons",
+        "default": true
+      }
+    ],
+	"blocks" : [
+      {
+        "type": "link_list",
+        "name": "Menu",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Quick Links"
+          },
+          {
+            "type": "link_list",
+            "id": "footer_link_list",
+            "label": "Menu",
+            "default": "footer"
+          }
+        ]
+      },
+	  {
+        "type": "text",
+        "name": "Text/Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Logo"
+          },
+		  {
+            "type": "range",
+            "id": "height_logo",
+            "label": "Logo height",
+            "min": 20,
+            "max": 200,
+            "step": 2,
+            "unit": "px",
+            "default": 50
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label":"Heading",
+            "default": "About Us"
+          },
+          {
+            "type": "text",
+            "id": "email",
+            "label":"Email address"
+          },
+          {
+            "type": "text",
+            "id": "phone",
+            "label":"Phone number",
+			"info": "123-456-7890"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default":"<p>Share store details, promotions, or brand content with your customers.</p>"
+          }
+        ]
+      },
+      {
+        "type": "social_medias",
+        "name": "Social medias",
+		"limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label":"Heading",
+            "default": "Follow us"
+          }
+        ]
+      },
+	  {
+        "type": "newsletter",
+        "name": "Newsletter",
+		"limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Subscribe to our newsletter"
+          },
+          {
+            "type": "text",
+            "id": "subtitle",
+            "label": "Subheading",
+            "default": "A short sentence describing what someone will receive by subscribing"
+          },
+          {
+            "type": "select",
+            "id": "send_icon",
+            "label": "Send icon",
+            "default": "fa-envelope",
+            "options": [
+              {
+                "value": "fa-arrow-right",
+                "label": "Arrow"
+              },
+              {
+                "value": "fa-envelope",
+                "label": "Envelope"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+

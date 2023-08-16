@@ -1,0 +1,323 @@
+{% if section.blocks.size > 0 %}
+
+  {% if section.blocks.size > 1 %}
+    {% assign hero_slick = true %}
+  {% else %}
+    {% assign hero_slick = false %}
+  {% endif %}
+
+  <div id="section-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="hero-section">
+    
+    {% include 'hero-header' %}
+    
+    <div id="Hero-{{ section.id }}" class="hero-container hero-index hero-header{% if hero_slick %} hero-slick{% endif %}"
+      {% if hero_slick %}
+         data-hero-slick="{{ hero_slick }}"
+         data-autoplay="{{ section.settings.autoplay }}"
+         data-autoplayspeed="{{ section.settings.autoplayspeed | times: 1000 }}"
+         data-dots="{{ section.settings.dots }}"
+         data-arrows="{{ section.settings.arrows }}"
+      {% endif %}>
+
+      <!-- Blocks -->
+      {% for block in section.blocks %}
+        <div class="hero hero-{{ block.id }}
+                    hero--{{ section.settings.section_height }}
+                    hero-mobile-{{ section.settings.section_height_mobile }}
+                    overlay
+                    lazyload
+                    hero-parallax
+                    {% unless forloop.first == true %}lazypreload{% endunless %}
+                    {% if hero_slick %}hero__slide slide--{{ block.id }}{% endif %}"
+             {% if block.settings.image %}
+             data-bgset="{% include 'bgset', image: block.settings.image %}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-position: {{ block.settings.image_position }}; background-image: url('{{ block.settings.image | img_url: 'medium' }});"
+             {% endif %}
+             {{ block.shopify_attributes }}>
+
+          {% if block.settings.image == blank %}
+            <div class="placeholder-background">
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
+          <div class="hero__inner">
+            <div class="hero__text-wrapper {{ block.settings.text_alignment }}">
+              <div class="grid">
+                <div class="grid__item large--eight-twelfths push--large--two-twelfths one-whole hero-content">
+                  {% if block.settings.title != blank %}
+                    <h2 class="hero__title">{{ block.settings.title | escape }}</h2>
+                  {% endif %}
+                  {% if block.settings.text != blank %}
+                    <div class="rte hero__text">{{ block.settings.text }}</div>
+                  {% endif %}
+                  {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+                    <a href="{{ block.settings.button_link }}" class="btn {{ block.settings.button_style }} hero__btn">
+                      {{ block.settings.button_label | escape }} <span class="fas fa-arrow-right" aria-hidden="true"></span>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+             </div>
+          </div>
+
+          {% unless block.settings.overlay %}
+            <style>
+              .hero-{{ block.id }}.overlay:after{
+                background-color: transparent;
+              }
+            </style>
+          {% endunless %}
+        </div>
+      {% endfor %}
+    </div>
+  
+    <div class="slick-navigation">
+      <button class="slick-arrows slick-prev">
+        <span class="fas fa-arrow-left"></span>
+      </button>
+      <div class="slick-dots-container"></div>
+      <button class="slick-arrows slick-next">
+        <span class="fas fa-arrow-right"></span>
+      </button>
+    </div>
+
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Slideshow",
+	"class": "hero-section",
+	"max_blocks": 4,
+    "settings": [
+	  {
+        "type": "select",
+        "id": "section_height",
+        "label": "Section height (desktop)",
+        "default": "xlarge",
+        "options": [
+          {
+            "label": "Extra Small",
+            "value": "xsmall"
+          },
+		  {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          },
+		  {
+            "label": "Full",
+            "value": "xlarge"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "section_height_mobile",
+        "label": "Section height (mobile)",
+        "default": "xlarge",
+        "options": [
+          {
+            "label": "Extra Small",
+            "value": "xsmall"
+          },
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          },
+          {
+            "label": "Full",
+            "value": "xlarge"
+          }
+        ]
+      },
+	  {
+		"type": "header",
+		"content": "Slider options"
+	  },
+	  {
+        "type": "checkbox",
+        "id": "autoplay",
+        "label": "Auto rotate",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "dots",
+        "label": "Show dots",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "arrows",
+        "label": "Show arrows",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "autoplayspeed",
+        "label": "Slide changes every",
+        "min": 3,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "default": 5
+      }
+    ],
+	"blocks" : [
+      {
+        "type": "slide",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "select",
+            "id": "image_position",
+            "label": "Image position",
+            "default": "center center",
+            "options": [
+              {
+                "label": "Top left",
+                "value": "top left"
+              },
+              {
+                "label": "Top center",
+                "value": "top center"
+              },
+              {
+                "label": "Top right",
+                "value": "top right"
+              },
+              {
+                "label": "Middle left",
+                "value": "center left"
+              },
+              {
+                "label": "Middle center",
+                "value": "center center"
+              },
+              {
+                "label":"Middle right",
+                "value": "center right"
+              },
+              {
+                "label":"Bottom left",
+                "value": "bottom left"
+              },
+              {
+                "label": "Bottom center",
+                "value": "bottom center"
+              },
+              {
+                "label": "Bottom right",
+                "value": "bottom right"
+              }
+            ]
+          },
+		  {
+            "type": "checkbox",
+            "id": "overlay",
+            "label": "Show overlay",
+            "default": true
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Slideshow."
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use overlay text to give your customers insight into your brand. Select imagery and text that relates to your style and story.</p>"
+          },
+          {
+            "type": "select",
+            "id": "text_alignment",
+            "label": "Text alignment",
+            "default": "text-center",
+            "options": [
+              {
+                "value": "",
+                "label": "Left"
+              },
+              {
+                "value": "text-center",
+                "label": "Center"
+              },
+              {
+                "value": "text-right",
+                "label": "Right"
+              }
+            ]
+          },	
+          {
+            "type": "text",
+            "id": "button_label",
+            "label": "Button label",
+			"default": "Shop now"
+          },
+          {
+            "type": "url",
+            "id": "button_link",
+            "label": "Button link",
+			"default": "/collections/all"
+          },
+          {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "default": "btn--primary",
+            "options": [
+              {
+                "value": "",
+                "label": "Default"
+              },
+              {
+                "value": "btn--primary",
+                "label": "Full"
+              },
+              {
+                "value": "btn-outline-primary",
+                "label": "Outline"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Slideshow",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "slide"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

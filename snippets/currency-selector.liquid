@@ -1,0 +1,14 @@
+{% if settings.show_currency_selector and shop.enabled_currencies.size > 1 %}
+  {% form 'currency', class: "currency-form" %}
+	<button class="btn btn-square-small currency-loading" style="display:none;">
+      <span class="fas fa-spinner fa-spin"></span>
+    </button>
+    <select name="currency" id="CurrencySelector" class="select--small currency-selector{% if settings.currency_custom %} select-custom{% endif %}" aria-describedby="a11y-refresh-page-message a11y-selection-message" data-currency-selector>
+      {% for currency in shop.enabled_currencies %}
+        <option value="{{currency.iso_code}}"{% if currency == cart.currency %} selected="true"{% endif %}>
+          {{currency.iso_code}}
+        </option>
+      {% endfor %}
+    </select>
+  {% endform %}
+{% endif %}

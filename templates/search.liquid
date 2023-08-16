@@ -1,0 +1,88 @@
+<!-- /templates/search.liquid -->
+{% comment %}
+
+  To return only products or pages in results:
+    - http://docs.shopify.com/manual/configuration/store-customization/return-only-product-in-storefront-search-results
+    - Or manually add type=product or type=page to the search URL as a parameter
+
+{% endcomment %}
+
+{% comment %}
+  Avoid accessing search.results before the opening paginate tag.
+  If you do, the pagination of results will be broken.
+{% endcomment %}
+{% paginate search.results by 12 %}
+
+<div data-section-type="search">
+  
+  <div class="grid">
+    <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+
+      <header class="section-header">
+        {% if search.performed %}
+          {% if search.results_count == 0 %}
+            <h1>{{ 'general.search.no_results_html' | t: terms: search.terms }}</h1>
+          {% else %}
+            <h1>{{ 'general.search.results_for_html' | t: terms: search.terms }}</h1>
+          {% endif %}
+        {% else %}
+          <h1 class="page-title">{{ 'general.search.title' | t }}</h1>
+        {% endif %}
+      </header>
+      
+    </div>
+  </div>
+  
+  <div class="grid">
+    <div class="grid__item large--one-third push--large--one-third text-center">
+      {% include 'search-bar' %}
+	</div>
+  </div>   
+
+  {% if search.performed %}
+  
+    {% case search.results_count %}
+	  {% when 1 %}
+        {% assign grid_item_width = 'large--eight-twelfths push--large--two-twelfths text-center' %}
+      {% when 2 %}
+        {% assign grid_item_width = 'large--four-twelfths push--large--two-twelfths medium--six-twelfths' %}
+      {% when 3 %}
+        {% assign grid_item_width = 'large--four-twelfths medium--six-twelfths' %}
+  	  {% else %}
+  		{% assign grid_item_width = 'large--four-twelfths medium--six-twelfths' %}
+    {% endcase %}
+
+    <hr class="hr--lg">
+    <div class="grid grid-uniform grid--spacer">
+      {% for item in search.results %}
+
+        {% if item.object_type == 'product' %}
+          {% assign product = item %}
+            {% include 'product-grid-item' %}
+        {% elsif item.object_type == 'article' %}
+          {% assign article = item %}
+          {% include 'article-grid-item' %}
+        {% else %}
+          <div class="grid__item grid-search {{ grid_item_width }}">
+            <div class="grid-search__page text-center">
+              <a href="{{ item.url }}" class="grid-search__page-link">
+                <span class="grid-search__page-content">
+                  <span class="h4 text-center">{{ item.title }}</span class="h4 text-center">
+                  {{ item.content | strip_html | truncatewords: 60 }}
+                </span>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+	  {% endfor %}
+    </div>
+
+    {% if paginate.pages > 1 %}
+      {% include 'pagination' %}
+    {% endif %}
+  {% endif %}
+</div>
+
+
+{% endpaginate %}

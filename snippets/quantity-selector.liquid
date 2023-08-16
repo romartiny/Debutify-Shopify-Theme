@@ -1,0 +1,81 @@
+{% unless type == 'js' %}
+<div class="qty-container">
+{% endunless %}
+ 
+  {% if type == 'product' %}
+    {% if settings.cart_type == 'page' %}
+    <button class="btn btn-square-small qty-adjust qty-minus js-qty__adjust--minus icon-fallback-text" type="button" aria-label="{{ 'cart.general.reduce_quantity' | t }}">
+      <span class="fas fa-minus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">&minus;</span>
+    </button>
+    {% endif %}
+    <input type="number" class="qty-input" name="quantity" id="Quantity" value="1" min="1" hidden="hidden">
+    {% if settings.cart_type == 'page' %}
+  	<button class="btn btn-square-small qty-adjust qty-plus js-qty__adjust--plus icon-fallback-text" type="button" aria-label="{{ 'cart.general.increase_quantity' | t }}">
+      <span class="fas fa-plus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">+</span>
+    </button>
+    {% endif %}
+  {% endif %}
+  
+  {% if type == 'cart' %}
+    {% if settings.cart_type == 'page' %}
+  	<button class="btn btn-square-small qty-adjust qty-minus js-qty__adjust--minus icon-fallback-text" type="button" aria-label="{{ 'cart.general.reduce_quantity' | t }}">
+      <span class="fas fa-minus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">&minus;</span>
+    </button>
+    {% endif %}
+    <input type="number" name="updates[]" id="updates_{{ item.key }}" class="qty-input cart__product-qty" value="{{ item.quantity }}" min="0" data-id="{{ item.key }}">
+    {% if settings.cart_type == 'page' %}
+    <button class="btn btn-square-small qty-adjust qty-plus js-qty__adjust--plus icon-fallback-text" type="button" aria-label="{{ 'cart.general.increase_quantity' | t }}">
+      <span class="fas fa-plus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">+</span>
+    </button>
+    {% endif %}
+  {% endif %}
+  
+  {% if type == 'ajax' %}
+    {% raw %}
+    <button type="button" class="btn btn-square-small qty-adjust qty-minus ajaxcart__qty-adjust ajaxcart__qty--minus icon-fallback-text" data-id="{{key}}" data-qty="{{itemMinus}}" aria-label="{% endraw %}{{ 'cart.general.reduce_quantity' | t }}{% raw %}">
+      <span class="fas fa-minus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">&minus;</span>
+    </button>
+    <input type="number" class="qty-input ajaxcart__qty-num" value="{{itemQty}}" min="0" data-id="{{key}}" aria-label="quantity" pattern="[0-9]*">
+    <button type="button" class="btn btn-square-small qty-adjust qty-plus ajaxcart__qty-adjust ajaxcart__qty--plus icon-fallback-text" data-id="{{key}}" data-qty="{{itemAdd}}" aria-label="{% endraw %}{{ 'cart.general.increase_quantity' | t }}{% raw %}">
+      <span class="fas fa-plus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">+</span>
+    </button>
+    {% endraw %}
+  {% endif %}
+  
+  {% if type == 'drawer' %}
+    {% raw %}
+    <button type="button" class="btn btn-square-small qty-adjust qty-minus ajaxcart__qty-adjust ajaxcart__qty--minus icon-fallback-text" data-id="{{key}}" data-qty="{{itemMinus}}" data-line="{{line}}" aria-label="{% endraw %}{{ 'cart.general.reduce_quantity' | t }}{% raw %}">
+      <span class="fas fa-minus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">&minus;</span>
+    </button>
+    <input type="number" name="updates[]" class="qty-input ajaxcart__qty-num" value="{{itemQty}}" min="0" data-id="{{key}}" data-line="{{line}}" aria-label="quantity" pattern="[0-9]*">
+    <button type="button" class="btn btn-square-small qty-adjust qty-plus ajaxcart__qty-adjust ajaxcart__qty--plus icon-fallback-text" data-id="{{key}}" data-line="{{line}}" data-qty="{{itemAdd}}" aria-label="{% endraw %}{{ 'cart.general.increase_quantity' | t }}{% raw %}">
+      <span class="fas fa-plus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">+</span>
+    </button>
+    {% endraw %}
+  {% endif %}
+  
+  {% if type == 'js' %}
+    {% raw %}
+    <button type="button" class="btn btn-square-small qty-adjust qty-minus js-qty__adjust js-qty__adjust--minus icon-fallback-text" data-id="{{key}}" data-qty="{{itemMinus}}" aria-label="{% endraw %}{{ 'cart.general.reduce_quantity' | t }}{% raw %}">
+      <span class="fas fa-minus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">&minus;</span>
+    </button>
+    <input type="number" class="qty-input js-qty__num" value="{{itemQty}}" min="1" data-id="{{key}}" aria-label="quantity" pattern="[0-9]*" name="{{inputName}}" id="{{inputId}}">
+    <button type="button" class="btn btn-square-small qty-adjust qty-plus js-qty__adjust js-qty__adjust--plus icon-fallback-text" data-id="{{key}}" data-qty="{{itemAdd}}" aria-label="{% endraw %}{{ 'cart.general.increase_quantity' | t }}{% raw %}">
+      <span class="fas fa-plus" aria-hidden="true"></span>
+      <span class="fallback-text" aria-hidden="true">+</span>
+    </button>
+    {% endraw %}
+  {% endif %}
+
+{% unless type == 'js' %}  
+</div>
+{% endunless %}

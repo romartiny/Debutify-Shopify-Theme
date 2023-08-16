@@ -1,0 +1,83 @@
+<!-- /snippets/collection-grid-item.liquid -->
+{% comment %}
+
+  This snippet is used to showcase each collection during the loop,
+  'for product in collections[collection_handle].products' in list-collections.liquid.
+
+{% endcomment %}
+
+{% comment %}
+  Set the default grid_item_width if no variable is set
+{% endcomment %}
+{% unless grid_item_width %}
+  {% assign grid_item_width = 'medium--one-half large--one-third' %}
+{% endunless %}
+
+{% comment %}
+  Set the default image_size if no variable is set
+{% endcomment %}
+{% unless image_size %}
+  {% assign image_size = 'grande' %}
+{% endunless %}
+
+{% if collection == blank %}
+  {% assign collection_link = '/admin/collections' %}
+{% else %}
+  {% assign collection_link = collections[collection_handle].url %}
+{% endif %}
+
+{% assign no_collection_image = true %}
+
+{% comment %}
+  Use capture to put the collection title in a variable that is used in liquid filters
+{% endcomment %}
+
+{% if collection == blank %}
+  {% assign collection_title = 'home_page.onboarding.collection_title' | t %}
+{% else %}
+  {% assign collection_title = collections[collection_handle].title | escape %}
+{% endif %}
+
+{% if collection.image %}
+  {%- assign collection_image = collection.image -%}
+{% elsif collection.products.first and collection.products.first.images != empty %}
+  {%- assign collection_image = collection.products.first.featured_image -%}
+{% else %}
+  {%- assign collection_image = blank -%}
+{% endif %}
+
+<div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+  <a href="{{ collection_link }}" class="collection_grid-link">
+
+    <div class="collection_grid-item collection_grid--{{ section.settings.section_height }} overlay lazyload"
+      {% unless collection_image == blank %}
+        style="background-image: url('{{ collection_image | img_url: 'small' }});"
+      {% endunless %}
+      data-bgset="{% include 'bgset', image: collection_image %}"
+      data-sizes="auto"
+      data-parent-fit="cover">
+      
+      {% if collection == blank %}
+        <div class="placeholder-background">
+          {% if grid_item_responsive %}
+            {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% else %}
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endif %}
+        </div>
+      {% endif %}
+          
+      <div class="collection_grid-inner">
+        <div class="collection_grid-text-wrapper">
+          {% if template == "index" %}
+            <h3 class="collection_grid-title">{{ collection_title }}</h3>
+          {% else %}
+            <h2 class="collection_grid-title">{{ collection_title }}</h2>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+  </a>
+</div>

@@ -1,0 +1,136 @@
+<style>
+  {% if section.settings.full_width %}
+    #section-{{ section.id }} .box{
+      padding-bottom: 0px;
+      
+      {% if section.settings.title == blank and section.settings.subtitle == blank %}
+        padding-top: 0px;
+      {% endif %}
+    }
+  {% endif %}
+</style>
+
+{% include 'block-width', width: 'full' %}
+
+<div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="featured-video-section">
+  <div class="box">
+    
+    {% unless section.settings.title == blank and section.settings.subtitle == blank %}
+      <div class="grid">
+        <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+          <div class="section-header">
+            {% unless section.settings.title == blank %}
+              <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+            {% endunless %}
+            {% unless section.settings.subtitle == blank %}
+              <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+            {% endunless %}
+          </div>
+         </div>
+      </div>
+    {% endunless %}
+    
+    <div class="{% if section.settings.full_width %}wrapper--full {% else %}wrapper {% endif %}">
+
+      {% if section.blocks.size > 0 %}
+        <div class="{% if section.settings.full_width %}grid--full {% else %}grid grid--spacer {% endif %}">
+
+          <!-- Blocks -->
+          {% for block in section.blocks %}
+            <div class="grid__item {{ column_width }}" {{ block.shopify_attributes }}>
+              <div class="video-wrapper">
+                {% if block.settings.video_url == blank %}
+                  <iframe class="lazyload" data-src="//www.youtube.com/embed/_9VUPq3SxOc?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+                {% else %}
+                  {% if block.settings.video_url.type == "youtube" %}
+                    <iframe class="lazyload" data-src="//www.youtube.com/embed/{{ block.settings.video_url.id }}?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+                  {% endif %}
+                  {% if block.settings.video_url.type == "vimeo" %}
+                    <iframe class="lazyload" data-src="//player.vimeo.com/video/{{ block.settings.video_url.id }}?color={{ settings.color_secondary | remove: "#" }}&byline=0&portrait=0&badge=0" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+      {% if section.blocks.size == 0 %}
+        {% include 'no-blocks' %}
+      {% endif %}
+  
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Video",
+	"class": "featured-video-section",
+	"max_blocks": 3,
+    "settings": [
+	  {
+        "type": "checkbox",
+        "id": "full_width",
+        "label": "Full width",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured video"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      }
+    ],
+	"blocks" : [
+      {
+        "type": "video",
+        "name": "Video",
+        "settings": [
+          {
+            "type": "video_url",
+            "id": "video_url",
+            "label": "Video link",
+            "accept": ["youtube", "vimeo"]
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Video",
+        "category": "Video",
+        "blocks": [
+          {
+            "type": "video"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

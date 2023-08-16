@@ -1,0 +1,14 @@
+<!-- /templates/collection.liquid -->
+{% comment %}
+  The contents of the collection.liquid template can be found in /sections/collection-template.liquid
+{% endcomment %}
+
+{% include 'collection-image' %}
+
+{% if settings.announcement_position == 'under' %}
+  {% include 'announcement' %}
+{% endif %}
+
+{% include 'breadcrumbs' %}
+
+{% section 'collection-template' %}

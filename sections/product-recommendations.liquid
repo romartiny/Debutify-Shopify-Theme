@@ -1,0 +1,193 @@
+{%- if section.settings.show_product_recommendations -%}
+  {%- assign limit = section.settings.desktop_grid | times: section.settings.rows -%}
+  {% assign counter = 0 %}
+
+  {%- if recommendations.performed -%}
+    {%- if recommendations.products_count > 0 -%}
+      <div class="product-recommendations">
+        <div class="box">
+          <div class="wrapper">
+        
+            {%- unless section.settings.title == blank and section.settings.subtitle == blank -%}
+              <div class="section-header">
+                <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+                <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+              </div>
+            {%- endunless -%}
+
+            <div class="grid grid-uniform grid--spacer{% if section.settings.desktop_grid == '2' %} large--eight-twelfths{% endif %}{% if section.settings.slider_related_products %} slick-format slick-product-grid slick-product-grid-{{ section.id }}{% endif %}"
+                 data-count="{{ limit }}"
+                 data-slidetoshow="{{ section.settings.desktop_grid }}"
+                 data-slidetoshowmobile="{{ section.settings.mobile_grid }}"
+                 data-autoplay="{{ section.settings.autoplay }}"
+                 data-autoplayspeed="{{ section.settings.autoplayspeed | times: 1000 }}"
+                 data-dots="{{ section.settings.dots }}"
+                 data-arrows="{{ section.settings.arrows }}">
+               
+              {%- include 'product-width' -%}
+              {%- for product in recommendations.products -%}
+                {%- include 'product-grid-item' -%}
+              {%- endfor -%}
+            </div>
+            
+            <div class="slick-navigation">
+              <button class="slick-arrows slick-prev">
+                <span class="fas fa-arrow-left"></span>
+              </button>
+              <div class="slick-dots-container"></div>
+              <button class="slick-arrows slick-next">
+                <span class="fas fa-arrow-right"></span>
+              </button>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <div id="productRecommendationsSection"
+         class="{{ section.settings.section_style }}" 
+         data-product-id="{{ product.id }}" 
+         data-section-id="{{ section.id }}" 
+         data-section-type="product-recommendations"
+         data-limit="{{ limit }}">
+	</div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Product recommendations",
+	"class": "product-recommendations-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_product_recommendations",
+        "label": "Show dynamic recommendations",
+		"info": "Dynamic recommendations change and improve with time. [Learn more](https://help.shopify.com/en/themes/development/recommended-products)",
+        "default": true
+      },
+	  {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "You may also like"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+	  {
+        "type": "select",
+        "id": "rows",
+        "label": "Number of rows",
+        "default": "1",
+        "options": [
+		  {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          }
+        ]
+      },
+	  {
+		"type": "select",
+		"id": "desktop_grid",
+		"label": "Products per row (desktop)",
+        "default": "4",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          }
+        ]
+	  },
+	  {
+	  	"type": "select",
+		"id": "mobile_grid",
+		"label": "Product per row (mobile)",
+		"default": "2",
+		"options":[
+		  {
+			"value": "1",
+			"label": "1"
+		  },
+		  {
+			"value":"2",
+			"label": "2"
+		  }
+		]
+	  },
+	  {
+		"type": "header",
+		"content": "Slider options"
+	  },
+      {
+        "type": "checkbox",
+        "id": "slider_related_products",
+        "label": "Enable slider",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "autoplay",
+        "label": "Auto rotate",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "dots",
+        "label": "Show dots",
+        "default": false
+      },
+	  {
+        "type": "checkbox",
+        "id": "arrows",
+        "label": "Show arrows",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "autoplayspeed",
+        "label": "Slide changes every",
+        "min": 3,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "default": 5
+      }
+    ]
+  }
+{% endschema %}

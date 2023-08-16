@@ -1,0 +1,225 @@
+{% include 'block-width' %}
+
+{% if section.blocks.size > 0 %}
+  <div id="section-{{ section.id }}" class="{{ section.settings.section_style }}" data-section-id="{{ section.id }}" data-section-type="quotes-section">
+    <div class="box">
+      <div class="wrapper">
+        
+        {% unless section.settings.title == blank and section.settings.subtitle == blank %}
+          <div class="grid">
+            <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+              <div class="section-header">
+                {% unless section.settings.title == blank %}
+                  <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+                {% endunless %}
+                {% unless section.settings.subtitle == blank %}
+                  <p class="section-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+                {% endunless %}
+              </div>
+             </div>
+          </div>
+        {% endunless %}
+        
+        {% if section.blocks.size > 0 %}
+          <style>
+            .quote-icon-wrapper{
+              width: {{ section.settings.quote_width }}px;
+              height: {{ section.settings.quote_width }}px;
+            }
+          </style>
+          <div class="quotes-wrapper">
+            <div class="quotes-slider slick-format" id="Quotes-{{ section.id }}"
+                 data-count="{{ section.blocks.size }}"
+                 data-autoplay="{{ section.settings.quote_auto }}"
+                 data-autoplayspeed="{{ section.settings.quote_auto_speed | times: 1000 }}"
+                 data-dots="{{ section.settings.quote_dots }}"
+                 data-arrows="{{ section.settings.quote_arrows }}">
+              
+              <!-- Blocks -->
+              {% for block in section.blocks %}
+                <div class="quotes-slide--{{ block.id }}" {{ block.shopify_attributes }}>
+                  <blockquote class="quotes-slider__text text-center">
+                    {% if block.settings.quote_image %}
+                    {% assign image_size = 'x' | append: section.settings.quote_width | prepend: section.settings.quote_width %}
+                      <div class="quote-image-wrapper">
+                        <img class="quote-image" src="{{ block.settings.quote_image | img_url: image_size, crop: 'center' }}"
+                             srcset="{{ block.settings.quote_image | img_url: image_size, crop: 'center' }} 1x, {{ block.settings.quote_image | img_url: image_size, crop: 'center', scale: 2 }} 2x">
+                      </div>
+                    {% else %}
+                      <div class="quote-icon-wrapper">
+                        <span class="fas fa-quote-left quote-icon"></span>
+                      </div>
+                    {% endif %}
+                    {% if block.settings.quote != blank %}
+                      <div class="rte">{{ block.settings.quote }}</div>
+                    {% endif %}
+                    {% if block.settings.author != blank %}
+                      <cite>{{ block.settings.author | escape }}</cite>
+                    {% endif %}
+                  </blockquote>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="slick-navigation">
+              <button class="slick-arrows slick-prev">
+                <span class="fas fa-arrow-left"></span>
+              </button>
+              <div class="slick-dots-container"></div>
+              <button class="slick-arrows slick-next">
+                <span class="fas fa-arrow-right"></span>
+              </button>
+            </div>
+          </div>
+        {% endif %}
+          
+        {% if section.blocks.size == 0 %}
+          {% include 'no-blocks' %}
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Testimonials",
+    "class": "quotes-section",
+    "max_blocks": 9,
+    "settings": [
+	  {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Testimonials"
+      },
+	  {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Subheading"
+      },
+      {
+        "type": "select",
+        "id": "section_style",
+        "label": "Section style",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default"
+          },
+		  {
+            "value": "bg-section",
+            "label": "Add background color"
+          },
+          {
+            "value": "border-section",
+            "label": "Add border top"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "quote_width",
+        "label": "Image/icon width",
+        "default": "70",
+        "options": [
+          {
+            "label": "Extra Small",
+            "value": "50"
+          },
+          {
+            "label": "Small",
+            "value": "60"
+          },
+          {
+            "label": "Medium",
+            "value": "70"
+          },
+          {
+            "label": "Large",
+            "value": "80"
+          },
+          {
+            "label": "Extra Large",              
+            "value": "90"
+          }
+        ]
+      },
+	  {
+		"type": "header",
+		"content": "Slider options"
+	  },
+	  {
+        "type": "checkbox",
+        "id": "quote_auto",
+        "label": "Auto rotate",
+        "default": true
+      },
+	  {
+        "type": "checkbox",
+        "id": "quote_dots",
+        "label": "Show dots",
+        "default": false
+      },
+	  {
+        "type": "checkbox",
+        "id": "quote_arrows",
+        "label": "Show arrows",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "quote_auto_speed",
+        "label": "Slide changes every",
+        "min": 3,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "default": 3
+      }
+	],
+	"blocks" : [
+	  {
+        "type": "quote",
+        "name": "Testimonials",
+        "settings": [
+		  {
+            "type": "image_picker",
+            "id": "quote_image",
+            "label": "Image"
+          },
+          {
+            "type": "richtext",
+            "id": "quote",
+            "label": "Text",
+            "default":"<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.</p>"
+          },
+		  {
+            "type": "text",
+            "id": "author",
+            "label": "Author",
+            "default":"Author's name"
+          }
+        ]
+      }
+    ],
+	"presets": [
+      {
+        "name":  "Testimonials",
+        "category":"Text",
+		"blocks": [
+          {
+            "type": "quote"
+          },
+          {
+            "type": "quote"
+          },
+          {
+            "type": "quote"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
